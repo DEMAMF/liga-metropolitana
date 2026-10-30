@@ -66,25 +66,33 @@ function calculateStandings(categoryId){
   );
 }
 
+
 function renderGeneral(){
-  const totals=Object.fromEntries(clubs.map(c=>[c.id,{id:c.id,pts:0}]));
+  const body=$('#generalStandings');
+  if(!body)return;
+
+  if(!clubs.length){
+    body.innerHTML='<tr><td colspan="3">No hay clubes cargados.</td></tr>';
+    return;
+  }
+
+  const totals=Object.fromEntries(
+    clubs.map(c=>[String(c.id),{id:c.id,pts:0}])
+  );
 
   categories.forEach(category=>{
     calculateStandings(category.id).forEach(row=>{
-      if(totals[row.id])totals[row.id].pts+=row.pts;
+      const club=totals[String(row.id)];
+      if(club)club.pts+=Number(row.pts)||0;
     });
   });
-
-  const body=$('#generalStandings');
-  if(!body)return;
 
   body.innerHTML=Object.values(totals)
     .sort((a,b)=>b.pts-a.pts||name(clubs,a.id).localeCompare(name(clubs,b.id),'es'))
     .map((x,i)=>`<tr><td>${i+1}</td><td>${esc(name(clubs,x.id))}</td><td class="n"><b>${x.pts}</b></td></tr>`)
-    .join('')||'<tr><td colspan="3">Todavía no hay clubes cargados.</td></tr>';
+    .join('');
 }
 
-function renderFairPlay(){
   const box=$('#fairPlayTable');
   if(!box)return;
 
