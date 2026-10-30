@@ -92,7 +92,7 @@ function renderGeneral(){
     .map((x,i)=>`<tr><td>${i+1}</td><td>${esc(name(clubs,x.id))}</td><td class="n"><b>${x.pts}</b></td></tr>`)
     .join('');
 }
-
+function renderFairPlay(){
   const box=$('#fairPlayTable');
   if(!box)return;
 
