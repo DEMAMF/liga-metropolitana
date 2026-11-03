@@ -11,13 +11,18 @@ const db=ready?createClient(cfg.url,cfg.anonKey):null;
 let admin=false,selected=null,clubs=[],categories=[],matches=[],scorers=[],announcements=[],cards=[],sanctions=[];
 
 function status(s,error=false){
-  $('#status').textContent=s;
-  $('#status').classList.toggle('error',error);
+  const box=$('#status');
+  if(!box)return;
+  box.textContent=s;
+  box.classList.toggle('error',error);
 }
 
 function page(id){
   $$('.page').forEach(e=>e.classList.toggle('hidden',e.id!==id));
   $$('#tabs button').forEach(e=>e.classList.toggle('active',e.dataset.page===id));
+
+  if(id==='documentos')loadDocuments();
+  if(id==='admin'&&admin)loadAdminDocuments();
 }
 
 $$('#tabs button').forEach(b=>b.onclick=()=>page(b.dataset.page));
@@ -66,7 +71,6 @@ function calculateStandings(categoryId){
   );
 }
 
-
 function renderGeneral(){
   const body=$('#generalStandings');
   if(!body)return;
@@ -92,6 +96,7 @@ function renderGeneral(){
     .map((x,i)=>`<tr><td>${i+1}</td><td>${esc(name(clubs,x.id))}</td><td class="n"><b>${x.pts}</b></td></tr>`)
     .join('');
 }
+
 function renderFairPlay(){
   const box=$('#fairPlayTable');
   if(!box)return;
@@ -125,8 +130,6 @@ function renderSanctions(){
   const box=$('#sanctionsList');
   if(!box)return;
 
-  const active=sanctions.filter(s=>s.status==='activa');
-
   if(!sanctions.length){
     box.innerHTML='<p>No hay sanciones registradas.</p>';
     return;
@@ -153,38 +156,38 @@ function renderSanctions(){
 }
 
 function render(){
-  $('#clubN').textContent=clubs.length;
-  $('#matchN').textContent=matches.filter(m=>m.home_goals!=null&&m.away_goals!=null).length;
-  $('#goalN').textContent=matches.reduce((s,m)=>s+(Number(m.home_goals)||0)+(Number(m.away_goals)||0),0);
+  if($('#clubN'))$('#clubN').textContent=clubs.length;
+  if($('#matchN'))$('#matchN').textContent=matches.filter(m=>m.home_goals!=null&&m.away_goals!=null).length;
+  if($('#goalN'))$('#goalN').textContent=matches.reduce((s,m)=>s+(Number(m.home_goals)||0)+(Number(m.away_goals)||0),0);
 
-  $('#recent').innerHTML=matches.filter(m=>m.home_goals!=null&&m.away_goals!=null).slice(0,5).map(matchView).join('')||'<p>Sin resultados todavía.</p>';
+  if($('#recent'))$('#recent').innerHTML=matches.filter(m=>m.home_goals!=null&&m.away_goals!=null).slice(0,5).map(matchView).join('')||'<p>Sin resultados todavía.</p>';
 
-  $('#fixtures').innerHTML=matches.filter(m=>String(m.category_id)===String(selected)).map(matchView).join('')||'<p>Sin partidos cargados en esta categoría.</p>';
+  if($('#fixtures'))$('#fixtures').innerHTML=matches.filter(m=>String(m.category_id)===String(selected)).map(matchView).join('')||'<p>Sin partidos cargados en esta categoría.</p>';
 
-  $('#announcements').innerHTML=announcements.map(a=>`<div><h3>${esc(a.title)}</h3><p style="white-space:pre-wrap">${esc(a.body)}</p><small>${new Date(a.created_at).toLocaleDateString('es-AR')}</small><hr></div>`).join('')||'<p>Sin comunicados.</p>';
+  if($('#announcements'))$('#announcements').innerHTML=announcements.map(a=>`<div><h3>${esc(a.title)}</h3><p style="white-space:pre-wrap">${esc(a.body)}</p><small>${new Date(a.created_at).toLocaleDateString('es-AR')}</small><hr></div>`).join('')||'<p>Sin comunicados.</p>';
 
   const standings=calculateStandings(selected);
-  $('#standings').innerHTML=standings.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(name(clubs,x.id))}</td>${['pj','pg','pe','pp','gf','gc'].map(k=>`<td class="n">${x[k]}</td>`).join('')}<td class="n">${x.gf-x.gc}</td><td class="n"><b>${x.pts}</b></td></tr>`).join('');
+  if($('#standings'))$('#standings').innerHTML=standings.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(name(clubs,x.id))}</td>${['pj','pg','pe','pp','gf','gc'].map(k=>`<td class="n">${x[k]}</td>`).join('')}<td class="n">${x.gf-x.gc}</td><td class="n"><b>${x.pts}</b></td></tr>`).join('');
 
   const grouped=new Map();
   scorers.filter(s=>String(s.category_id)===String(selected)).forEach(s=>{
-    const key=JSON.stringify([s.player.trim().toLowerCase(),s.club_id]);
+    const key=JSON.stringify([String(s.player||'').trim().toLowerCase(),s.club_id]);
     const x=grouped.get(key)||{...s,goals:0};
     x.goals+=Number(s.goals)||0;
     grouped.set(key,x);
   });
 
-  $('#scorers').innerHTML=[...grouped.values()].sort((a,b)=>b.goals-a.goals).map(s=>`<tr><td>${esc(s.player)}</td><td>${esc(name(clubs,s.club_id))}</td><td class="n">${s.goals}</td></tr>`).join('')||'<tr><td colspan="3">Sin goleadores cargados.</td></tr>';
+  if($('#scorers'))$('#scorers').innerHTML=[...grouped.values()].sort((a,b)=>b.goals-a.goals).map(s=>`<tr><td>${esc(s.player)}</td><td>${esc(name(clubs,s.club_id))}</td><td class="n">${s.goals}</td></tr>`).join('')||'<tr><td colspan="3">Sin goleadores cargados.</td></tr>';
 
   renderGeneral();
   renderFairPlay();
   renderSanctions();
 
-  $('#adminMatches').innerHTML=matches.map(m=>`<div class="row" style="margin:8px 0"><small>${esc(name(categories,m.category_id))}: ${esc(name(clubs,m.home_id))} ${m.home_goals??'—'}-${m.away_goals??'—'} ${esc(name(clubs,m.away_id))}</small><button class="alt" data-delete="matches" data-id="${m.id}">Eliminar</button></div>`).join('');
+  if($('#adminMatches'))$('#adminMatches').innerHTML=matches.map(m=>`<div class="row" style="margin:8px 0"><small>${esc(name(categories,m.category_id))}: ${esc(name(clubs,m.home_id))} ${m.home_goals??'—'}-${m.away_goals??'—'} ${esc(name(clubs,m.away_id))}</small><button class="alt" data-delete="matches" data-id="${m.id}">Eliminar</button></div>`).join('');
 
-  $('#adminScorers').innerHTML=scorers.map(s=>`<div class="row" style="margin:8px 0"><small>${esc(s.player)} · ${esc(name(clubs,s.club_id))} · ${s.goals}</small><button class="alt" data-delete="scorers" data-id="${s.id}">Eliminar</button></div>`).join('');
+  if($('#adminScorers'))$('#adminScorers').innerHTML=scorers.map(s=>`<div class="row" style="margin:8px 0"><small>${esc(s.player)} · ${esc(name(clubs,s.club_id))} · ${s.goals}</small><button class="alt" data-delete="scorers" data-id="${s.id}">Eliminar</button></div>`).join('');
 
-  $('#adminAnnouncements').innerHTML=announcements.map(a=>`<div class="row" style="margin:8px 0"><small>${esc(a.title)}</small><button class="alt" data-delete="announcements" data-id="${a.id}">Eliminar</button></div>`).join('');
+  if($('#adminAnnouncements'))$('#adminAnnouncements').innerHTML=announcements.map(a=>`<div class="row" style="margin:8px 0"><small>${esc(a.title)}</small><button class="alt" data-delete="announcements" data-id="${a.id}">Eliminar</button></div>`).join('');
 }
 
 $$('.filter').forEach(e=>e.onchange=()=>{
@@ -195,13 +198,14 @@ $$('.filter').forEach(e=>e.onchange=()=>{
 
 async function load(){
   if(!db)return;
+
   try{
     const tables=['clubs','categories','matches','scorers','announcements','cards','disciplinary_sanctions'];
     const result=await Promise.all(tables.map(t=>db.from(t).select('*')));
     const error=result.find(x=>x.error)?.error;
     if(error)throw error;
 
-    [clubs,categories,matches,scorers,announcements,cards,sanctions]=result.map(x=>x.data);
+    [clubs,categories,matches,scorers,announcements,cards,sanctions]=result.map(x=>x.data||[]);
 
     categories.sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
     matches.sort((a,b)=>String(b.match_date||'').localeCompare(String(a.match_date||''))||b.id-a.id);
@@ -223,124 +227,162 @@ async function load(){
 
 async function authState(){
   if(!db)return;
+
   const {data:{user}}=await db.auth.getUser();
   admin=false;
+
   if(user){
     const {data,error}=await db.rpc('is_admin');
     admin=!error&&data===true;
   }
-  $('#adminTab').classList.toggle('hidden',!admin);
-  $('#loginToggle').textContent=admin?'Panel administrador':'Acceso administrador';
-  if(!admin&&!$('#admin').classList.contains('hidden'))page('inicio');
+
+  if($('#adminTab'))$('#adminTab').classList.toggle('hidden',!admin);
+  if($('#loginToggle'))$('#loginToggle').textContent=admin?'Panel administrador':'Acceso administrador';
+
+  if(!admin&&$('#admin')&&!$('#admin').classList.contains('hidden')){
+    page('inicio');
+  }
+
+  if(admin){
+    await loadAdminDocuments();
+  }
 }
 
-$('#loginToggle').onclick=()=>page(admin?'admin':'login');
+$('#loginToggle')?.addEventListener('click',()=>page(admin?'admin':'login'));
 
-$('#loginForm').onsubmit=async e=>{
+$('#loginForm')?.addEventListener('submit',async e=>{
   e.preventDefault();
   if(!db)return;
-  const {error}=await db.auth.signInWithPassword({email:$('#email').value,password:$('#password').value});
+
+  const {error}=await db.auth.signInWithPassword({
+    email:$('#email').value,
+    password:$('#password').value
+  });
+
   $('#password').value='';
-  if(error){status('Ingreso rechazado: '+error.message,true);return;}
+
+  if(error){
+    status('Ingreso rechazado: '+error.message,true);
+    return;
+  }
+
   await authState();
-  if(admin){page('admin');status('Sesión de administrador iniciada.');}
-  else{
+
+  if(admin){
+    page('admin');
+    status('Sesión de administrador iniciada.');
+  }else{
     await db.auth.signOut();
     status('Esta cuenta no tiene permisos de administrador.',true);
   }
-};
+});
 
-$('#logout').onclick=async()=>{
+$('#logout')?.addEventListener('click',async()=>{
   await db.auth.signOut();
   await authState();
   page('inicio');
   status('Sesión cerrada.');
-};
+});
 
 async function insert(form,table,transform=x=>x){
   if(!admin)return;
+
   const data=transform(Object.fromEntries(new FormData(form)));
   const {error}=await db.from(table).insert(data);
-  if(error){status('No se guardó: '+error.message,true);return;}
+
+  if(error){
+    status('No se guardó: '+error.message,true);
+    return;
+  }
+
   form.reset();
   await load();
   status('Guardado correctamente.');
 }
 
-$('#clubForm').onsubmit=e=>{
+$('#clubForm')?.addEventListener('submit',e=>{
   e.preventDefault();
   insert(e.target,'clubs',x=>({name:x.name.trim()}));
-};
+});
 
-$('#matchForm').onsubmit=e=>{
+$('#matchForm')?.addEventListener('submit',e=>{
   e.preventDefault();
+
   insert(e.target,'matches',x=>{
     x.category_id=+x.category_id;
     x.home_id=+x.home_id;
     x.away_id=+x.away_id;
     x.home_goals=+x.home_goals;
     x.away_goals=+x.away_goals;
-    if(x.home_id===x.away_id)throw Error('El local y visitante deben ser distintos');
+
+    if(x.home_id===x.away_id){
+      throw Error('El local y visitante deben ser distintos');
+    }
+
     return x;
   }).catch(err=>status(err.message,true));
-};
+});
 
-$('#scorerForm').onsubmit=e=>{
+$('#scorerForm')?.addEventListener('submit',e=>{
   e.preventDefault();
   insert(e.target,'scorers',x=>({...x,player:x.player.trim(),club_id:+x.club_id,category_id:+x.category_id,goals:+x.goals}));
-};
+});
 
-$('#announcementForm').onsubmit=e=>{
+$('#announcementForm')?.addEventListener('submit',e=>{
   e.preventDefault();
   insert(e.target,'announcements');
-};
+});
 
-$('#admin').onclick=async e=>{
+$('#admin')?.addEventListener('click',async e=>{
   const b=e.target.closest('[data-delete]');
+
   if(!b||!admin||!confirm('¿Eliminar este registro?'))return;
+
   const {error}=await db.from(b.dataset.delete).delete().eq('id',Number(b.dataset.id));
+
   if(error)status(error.message,true);
   else await load();
-};
+});
+
 // =====================================
 // DOCUMENTACION OFICIAL - LIGA METROPOLITANA
 // =====================================
 
 async function loadDocuments(){
-  const box = $('#documentsList');
-  if(!box || !db) return;
+  const box=$('#documentsList');
+  if(!box||!db)return;
 
-  box.innerHTML = '<p>Cargando documentos...</p>';
+  box.innerHTML='<p>Cargando documentos...</p>';
 
-  let query = db.from('official_documents')
+  let query=db.from('official_documents')
     .select('*')
-    .order('doc_date', {ascending:false});
+    .order('doc_date',{ascending:false});
 
-  const filter = $('#documentType')?.value;
-  if(filter) query = query.eq('doc_type',filter);
+  const filter=$('#documentType')?.value;
+  if(filter)query=query.eq('doc_type',filter);
 
-  const {data,error} = await query;
+  const {data,error}=await query;
 
   if(error){
-    box.innerHTML = '<p>Error al cargar documentos: '+esc(error.message)+'</p>';
+    box.innerHTML='<p>Error al cargar documentos: '+esc(error.message)+'</p>';
     return;
   }
 
-  if(!data.length){
-    box.innerHTML = '<p>No hay documentos publicados.</p>';
+  if(!data||!data.length){
+    box.innerHTML='<p>No hay documentos publicados.</p>';
     return;
   }
 
-  box.innerHTML = data.map(d=>{
-    const file = db.storage
+  const types={
+    tribunal:'Tribunal de Disciplina',
+    reglamento:'Reglamento',
+    circular:'Circular oficial'
+  };
+
+  box.innerHTML=data.map(d=>{
+    const file=db.storage
       .from('documentos-oficiales')
       .getPublicUrl(d.file_path).data.publicUrl;
-
-    const types = {
-      tribunal:'Tribunal de Disciplina',
-      reglamento:'Reglamento',
-      circular:'Circular oficial'
-    };
 
     return `
       <div class="panel">
@@ -349,7 +391,7 @@ async function loadDocuments(){
         <small>Fecha: ${esc(d.doc_date||'—')}</small>
         <p>${esc(d.tournament||'')}</p>
         <a href="${esc(file)}" target="_blank" rel="noopener">
-          <button>Descargar PDF</button>
+          <button type="button">Descargar PDF</button>
         </a>
       </div>
     `;
@@ -358,8 +400,9 @@ async function loadDocuments(){
 
 $('#documentType')?.addEventListener('change',loadDocuments);
 
-
-// CARGA DE DOCUMENTOS DESDE ADMINISTRACION
+// =====================================
+// PUBLICAR DOCUMENTOS PDF
+// =====================================
 
 $('#documentForm')?.addEventListener('submit',async e=>{
   e.preventDefault();
@@ -376,7 +419,7 @@ $('#documentForm')?.addEventListener('submit',async e=>{
   const date=form.elements.doc_date.value;
   const file=form.elements.pdf.files[0];
 
-  if(!file || file.type!=='application/pdf'){
+  if(!file||file.type!=='application/pdf'){
     status('Seleccioná un archivo PDF válido.',true);
     return;
   }
@@ -393,6 +436,11 @@ $('#documentForm')?.addEventListener('submit',async e=>{
 
   const {data:{user}}=await db.auth.getUser();
 
+  if(!user){
+    status('La sesión de administrador no está activa. Volvé a ingresar.',true);
+    return;
+  }
+
   const {error:uploadError}=await db.storage
     .from('documentos-oficiales')
     .upload(path,file,{contentType:'application/pdf'});
@@ -402,16 +450,14 @@ $('#documentForm')?.addEventListener('submit',async e=>{
     return;
   }
 
-  const {error:insertError}=await db
-    .from('official_documents')
-    .insert({
-      title,
-      doc_type:type,
-      tournament:tournament||null,
-      doc_date:date,
-      file_path:path,
-      created_by:user.id
-    });
+  const {error:insertError}=await db.from('official_documents').insert({
+    title,
+    doc_type:type,
+    tournament:tournament||null,
+    doc_date:date,
+    file_path:path,
+    created_by:user.id
+  });
 
   if(insertError){
     await db.storage.from('documentos-oficiales').remove([path]);
@@ -421,16 +467,20 @@ $('#documentForm')?.addEventListener('submit',async e=>{
 
   form.reset();
   status('Documento publicado correctamente.');
+
   await loadDocuments();
   await loadAdminDocuments();
 });
 
-
-// LISTADO PRIVADO PARA ADMINISTRACION
+// =====================================
+// LISTADO DE DOCUMENTOS EN ADMINISTRACION
+// =====================================
 
 async function loadAdminDocuments(){
   const box=$('#adminDocuments');
-  if(!box || !admin || !db) return;
+  if(!box||!admin||!db)return;
+
+  box.innerHTML='<p>Cargando documentos...</p>';
 
   const {data,error}=await db.from('official_documents')
     .select('*')
@@ -441,22 +491,21 @@ async function loadAdminDocuments(){
     return;
   }
 
-  box.innerHTML=data.map(d=>`
+  box.innerHTML=(data||[]).map(d=>`
     <div class="row" style="margin:10px 0">
       <small>${esc(d.title)}</small>
-      <button class="alt" data-doc-delete="${d.id}">Eliminar</button>
+      <button type="button" class="alt" data-doc-delete="${d.id}">Eliminar</button>
     </div>
-  `).join('') || '<p>No hay documentos cargados.</p>';
+  `).join('')||'<p>No hay documentos cargados.</p>';
 }
 
 $('#adminDocuments')?.addEventListener('click',async e=>{
   const button=e.target.closest('[data-doc-delete]');
-  if(!button || !admin) return;
 
-  if(!confirm('¿Eliminar este documento?')) return;
+  if(!button||!admin)return;
+  if(!confirm('¿Eliminar este documento?'))return;
 
-  const {data:doc,error:readError}=await db
-    .from('official_documents')
+  const {data:doc,error:readError}=await db.from('official_documents')
     .select('file_path')
     .eq('id',button.dataset.docDelete)
     .single();
@@ -485,13 +534,26 @@ $('#adminDocuments')?.addEventListener('click',async e=>{
   }
 
   status('Documento eliminado.');
+
   await loadDocuments();
   await loadAdminDocuments();
 });
+
+// =====================================
+// INICIO DE LA PAGINA
+// =====================================
+
 if(!ready){
   status('Falta configurar config.js con la URL y la clave pública de Supabase.',true);
 }else{
   await authState();
   await load();
-  db.auth.onAuthStateChange(()=>{setTimeout(authState,0);});
+  await loadDocuments();
+
+  db.auth.onAuthStateChange(()=>{
+    setTimeout(async()=>{
+      await authState();
+      if(admin)await loadAdminDocuments();
+    },0);
+  });
 }
