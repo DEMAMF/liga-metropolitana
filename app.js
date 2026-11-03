@@ -302,7 +302,192 @@ $('#admin').onclick=async e=>{
   if(error)status(error.message,true);
   else await load();
 };
+// =====================================
+// DOCUMENTACION OFICIAL - LIGA METROPOLITANA
+// =====================================
 
+async function loadDocuments(){
+  const box = $('#documentsList');
+  if(!box || !db) return;
+
+  box.innerHTML = '<p>Cargando documentos...</p>';
+
+  let query = db.from('official_documents')
+    .select('*')
+    .order('doc_date', {ascending:false});
+
+  const filter = $('#documentType')?.value;
+  if(filter) query = query.eq('doc_type',filter);
+
+  const {data,error} = await query;
+
+  if(error){
+    box.innerHTML = '<p>Error al cargar documentos: '+esc(error.message)+'</p>';
+    return;
+  }
+
+  if(!data.length){
+    box.innerHTML = '<p>No hay documentos publicados.</p>';
+    return;
+  }
+
+  box.innerHTML = data.map(d=>{
+    const file = db.storage
+      .from('documentos-oficiales')
+      .getPublicUrl(d.file_path).data.publicUrl;
+
+    const types = {
+      tribunal:'Tribunal de Disciplina',
+      reglamento:'Reglamento',
+      circular:'Circular oficial'
+    };
+
+    return `
+      <div class="panel">
+        <h3>${esc(d.title)}</h3>
+        <p>${esc(types[d.doc_type]||d.doc_type)}</p>
+        <small>Fecha: ${esc(d.doc_date||'—')}</small>
+        <p>${esc(d.tournament||'')}</p>
+        <a href="${esc(file)}" target="_blank" rel="noopener">
+          <button>Descargar PDF</button>
+        </a>
+      </div>
+    `;
+  }).join('');
+}
+
+$('#documentType')?.addEventListener('change',loadDocuments);
+
+
+// CARGA DE DOCUMENTOS DESDE ADMINISTRACION
+
+$('#documentForm')?.addEventListener('submit',async e=>{
+  e.preventDefault();
+
+  if(!admin){
+    status('No tenés permisos de administrador.',true);
+    return;
+  }
+
+  const form=e.target;
+  const title=form.elements.title.value.trim();
+  const type=form.elements.doc_type.value;
+  const tournament=form.elements.tournament.value.trim();
+  const date=form.elements.doc_date.value;
+  const file=form.elements.pdf.files[0];
+
+  if(!file || file.type!=='application/pdf'){
+    status('Seleccioná un archivo PDF válido.',true);
+    return;
+  }
+
+  if(file.size>20*1024*1024){
+    status('El PDF supera el límite de 20 MB.',true);
+    return;
+  }
+
+  const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const path=`${type}/${Date.now()}-${safeName}`;
+
+  status('Subiendo documento...');
+
+  const {data:{user}}=await db.auth.getUser();
+
+  const {error:uploadError}=await db.storage
+    .from('documentos-oficiales')
+    .upload(path,file,{contentType:'application/pdf'});
+
+  if(uploadError){
+    status('Error al subir PDF: '+uploadError.message,true);
+    return;
+  }
+
+  const {error:insertError}=await db
+    .from('official_documents')
+    .insert({
+      title,
+      doc_type:type,
+      tournament:tournament||null,
+      doc_date:date,
+      file_path:path,
+      created_by:user.id
+    });
+
+  if(insertError){
+    await db.storage.from('documentos-oficiales').remove([path]);
+    status('Error al registrar documento: '+insertError.message,true);
+    return;
+  }
+
+  form.reset();
+  status('Documento publicado correctamente.');
+  await loadDocuments();
+  await loadAdminDocuments();
+});
+
+
+// LISTADO PRIVADO PARA ADMINISTRACION
+
+async function loadAdminDocuments(){
+  const box=$('#adminDocuments');
+  if(!box || !admin || !db) return;
+
+  const {data,error}=await db.from('official_documents')
+    .select('*')
+    .order('created_at',{ascending:false});
+
+  if(error){
+    box.innerHTML='<p>'+esc(error.message)+'</p>';
+    return;
+  }
+
+  box.innerHTML=data.map(d=>`
+    <div class="row" style="margin:10px 0">
+      <small>${esc(d.title)}</small>
+      <button class="alt" data-doc-delete="${d.id}">Eliminar</button>
+    </div>
+  `).join('') || '<p>No hay documentos cargados.</p>';
+}
+
+$('#adminDocuments')?.addEventListener('click',async e=>{
+  const button=e.target.closest('[data-doc-delete]');
+  if(!button || !admin) return;
+
+  if(!confirm('¿Eliminar este documento?')) return;
+
+  const {data:doc,error:readError}=await db
+    .from('official_documents')
+    .select('file_path')
+    .eq('id',button.dataset.docDelete)
+    .single();
+
+  if(readError){
+    status(readError.message,true);
+    return;
+  }
+
+  const {error:removeError}=await db.storage
+    .from('documentos-oficiales')
+    .remove([doc.file_path]);
+
+  if(removeError){
+    status(removeError.message,true);
+    return;
+  }
+
+  const {error}=await db.from('official_documents')
+    .delete()
+    .eq('id',button.dataset.docDelete);
+
+  if(error){
+    status(error.message,true);
+    return;
+  }
+
+  status('Documento eliminado.');
+  await loadDocuments();
+  await loadAdminDocuments();
+});
 if(!ready){
   status('Falta configurar config.js con la URL y la clave pública de Supabase.',true);
 }else{
