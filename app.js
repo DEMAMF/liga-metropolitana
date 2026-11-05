@@ -29,7 +29,7 @@ $$('#tabs button').forEach(b=>b.onclick=()=>page(b.dataset.page));
 const name=(list,id)=>list.find(x=>String(x.id)===String(id))?.name||'—';
 
 // =====================================
-// ESCUDOS DE LOS CLUBES
+// ESCUDOS DE LOS CLUBES (Tamaño uniforme)
 // =====================================
 
 const ESCUDOS_BASE='https://raw.githubusercontent.com/DEMAMF/liga-amf/main/escudos/';
@@ -48,13 +48,16 @@ const crestFiles={
   'SANTA ANA':'SANTA ANA.png'
 };
 
+function getCrestImg(clubName){
+  const file=crestFiles[norm(clubName)];
+  if(!file)return '';
+  return `<img src="${ESCUDOS_BASE}${encodeURIComponent(file)}" alt="" loading="lazy" style="width:28px;height:28px;object-fit:contain;flex:none;" onerror="this.remove()">`;
+}
+
 function clubLabel(id){
   const n=name(clubs,id);
-  const file=crestFiles[norm(n)];
-  const img=file
-    ?`<img src="${ESCUDOS_BASE}${encodeURIComponent(file)}" alt="" loading="lazy" onerror="this.remove()">`
-    :'';
-  return `<span class="club-cell"><span>${esc(n)}</span>${img}</span>`;
+  const img=getCrestImg(n);
+  return `<span class="club-cell" style="display:inline-flex;align-items:center;gap:8px;"><span>${esc(n)}</span>${img}</span>`;
 }
 
 function options(sel,list){
@@ -192,22 +195,28 @@ function render(){
 
   if($('#fixtures'))$('#fixtures').innerHTML=matches.filter(m=>String(m.category_id)===String(selected)).map(matchView).join('')||'<p>Sin partidos cargados en esta categoría.</p>';
 
-// Renderizar la Copa Anual con diseño limpio y escudos alineados
+  // Renderizar la Copa Anual con escudos perfectamente alineados y del mismo tamaño
   const cupBox=$('#cupMatchesView');
   if(cupBox){
-    cupBox.innerHTML=cupMatches.map(m=>`
-      <div class="match" style="background:#f0f8fd; border-left:4px solid var(--sky); margin-bottom:12px; padding:12px 16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
-        <span style="font-weight:800; color:var(--navy); min-width:140px; font-size:13px;">${esc(m.round)}</span>
-        <div style="flex:1; display:flex; justify-content:flex-start; align-items:center; gap:8px;">
-          ${clubLabel(m.home_id)}
+    cupBox.innerHTML=cupMatches.map(m=>{
+      const homeName = name(clubs, m.home_id);
+      const awayName = name(clubs, m.away_id);
+      return `
+        <div class="match" style="background:#f0f8fd; border-left:4px solid var(--sky); margin-bottom:12px; padding:12px 16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+          <span style="font-weight:800; color:var(--navy); min-width:140px; font-size:13px;">${esc(m.round)}</span>
+          <div style="flex:1; display:flex; justify-content:flex-end; align-items:center; gap:8px; text-align:right;">
+            <span style="font-weight:600;">${esc(homeName)}</span>
+            ${getCrestImg(homeName)}
+          </div>
+          <b style="padding:6px 12px; background:#e2f2fc; border-radius:8px; font-size:15px; min-width:55px; text-align:center; margin:0 10px;">${m.home_goals??'—'} – ${m.away_goals??'—'}</b>
+          <div style="flex:1; display:flex; justify-content:flex-start; align-items:center; gap:8px; text-align:left;">
+            ${getCrestImg(awayName)}
+            <span style="font-weight:600;">${esc(awayName)}</span>
+          </div>
         </div>
-        <b style="padding:6px 12px; background:#e2f2fc; border-radius:8px; font-size:15px; min-width:55px; text-align:center;">${m.home_goals??'—'} – ${m.away_goals??'—'}</b>
-        <div style="flex:1; display:flex; justify-content:flex-end; align-items:center; gap:8px;">
-          ${clubLabel(m.away_id)}
-        </div>
-      </div>
-      <small style="display:block; margin-bottom:16px; color:var(--muted); text-align:center; font-size:12px;">Día del partido: ${esc(m.match_date||'A confirmar')}</small>
-    `).join('')||'<p>Sin cruces de copa cargados.</p>';
+        <small style="display:block; margin-bottom:16px; color:var(--muted); text-align:center; font-size:12px;">Día del partido: ${esc(m.match_date||'A confirmar')}</small>
+      `;
+    }).join('')||'<p>Sin cruces de copa cargados.</p>';
   }
 
   if($('#announcements'))$('#announcements').innerHTML=announcements.map(a=>`<div><h3>${esc(a.title)}</h3><p style="white-space:pre-wrap">${esc(a.body)}</p><small>${new Date(a.created_at).toLocaleDateString('es-AR')}</small><hr></div>`).join('')||'<p>Sin comunicados.</p>';
