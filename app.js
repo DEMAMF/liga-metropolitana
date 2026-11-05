@@ -210,11 +210,11 @@ function render(){
   renderFairPlay();
   renderSanctions();
 
-  if($('#adminMatches'))$('#adminMatches').innerHTML=matches.map(m=>`<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f8fafc; border:1px solid var(--border); border-radius:10px; margin-bottom:8px;"><span style="font-size:13px"><b>${esc(name(categories,m.category_id))}</b> · ${esc(name(clubs,m.home_id))} ${m.home_goals??'—'}-${m.away_goals??'—'} ${esc(name(clubs,m.away_id))}</span><button class="alt" style="padding:6px 12px; font-size:12px" data-delete="matches" data-id="${m.id}">Eliminar</button></div>`).join('')||'<p style="color:var(--muted); font-size:13px">No hay partidos cargados.</p>';
+  if($('#adminMatches'))$('#adminMatches').innerHTML=matches.map(m=>`<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f8fafc; border:1px solid var(--border); border-radius:10px; margin-bottom:8px;"><span style="font-size:13px"><b>${esc(name(categories,m.category_id))}</b> · ${esc(name(clubs,m.home_id))} ${m.home_goals??'—'}-${m.away_goals??'—'} ${esc(name(clubs,m.away_id))}</span><button class="alt" type="button" style="padding:6px 12px; font-size:12px" data-delete="matches" data-id="${m.id}">Eliminar</button></div>`).join('')||'<p style="color:var(--muted); font-size:13px">No hay partidos cargados.</p>';
 
-  if($('#adminScorers'))$('#adminScorers').innerHTML=scorers.map(s=>`<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#f8fafc; border:1px solid var(--border); border-radius:8px; margin-bottom:6px;"><span style="font-size:13px">${esc(s.player)} (${esc(name(clubs,s.club_id))}) - ${s.goals} goles</span><button class="alt" style="padding:4px 10px; font-size:11px" data-delete="scorers" data-id="${s.id}">Eliminar</button></div>`).join('')||'';
+  if($('#adminScorers'))$('#adminScorers').innerHTML=scorers.map(s=>`<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#f8fafc; border:1px solid var(--border); border-radius:8px; margin-bottom:6px;"><span style="font-size:13px">${esc(s.player)} (${esc(name(clubs,s.club_id))}) - ${s.goals} goles</span><button class="alt" type="button" style="padding:4px 10px; font-size:11px" data-delete="scorers" data-id="${s.id}">Eliminar</button></div>`).join('')||'';
 
-  if($('#adminAnnouncements'))$('#adminAnnouncements').innerHTML=announcements.map(a=>`<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#f8fafc; border:1px solid var(--border); border-radius:8px; margin-bottom:6px;"><span style="font-size:13px"><b>${esc(a.title)}</b></span><button class="alt" style="padding:4px 10px; font-size:11px" data-delete="announcements" data-id="${a.id}">Eliminar</button></div>`).join('')||'';
+  if($('#adminAnnouncements'))$('#adminAnnouncements').innerHTML=announcements.map(a=>`<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#f8fafc; border:1px solid var(--border); border-radius:8px; margin-bottom:6px;"><span style="font-size:13px"><b>${esc(a.title)}</b></span><button class="alt" type="button" style="padding:4px 10px; font-size:11px" data-delete="announcements" data-id="${a.id}">Eliminar</button></div>`).join('')||'';
 }
 
 $$('.filter').forEach(e=>e.onchange=()=>{
@@ -403,7 +403,7 @@ async function loadAdminDocuments(){
   if(!box||!admin||!db)return;
   const {data,error}=await db.from('official_documents').select('*').order('created_at',{ascending:false});
   if(error){box.innerHTML='<p>'+esc(error.message)+'</p>';return;}
-  box.innerHTML=(data||[]).map(d=>`<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#f8fafc; border:1px solid var(--border); border-radius:8px; margin-bottom:6px;"><span style="font-size:13px">${esc(d.title)}</span><button class="alt" style="padding:4px 10px; font-size:11px" data-doc-delete="${d.id}">Eliminar</button></div>`).join('')||'<p style="color:var(--muted); font-size:13px">No hay documentos cargados.</p>';
+  box.innerHTML=(data||[]).map(d=>`<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#f8fafc; border:1px solid var(--border); border-radius:8px; margin-bottom:6px;"><span style="font-size:13px">${esc(d.title)}</span><button class="alt" type="button" style="padding:4px 10px; font-size:11px" data-doc-delete="${d.id}">Eliminar</button></div>`).join('')||'<p style="color:var(--muted); font-size:13px">No hay documentos cargados.</p>';
 }
 
 $('#adminDocuments')?.addEventListener('click',async e=>{
