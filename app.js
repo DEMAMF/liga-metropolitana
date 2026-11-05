@@ -7,7 +7,7 @@ const $$=s=>[...document.querySelectorAll(s)];
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const db=ready?createClient(cfg.url,cfg.anonKey):null;
 
-let admin=false,selected=null,clubs=[],categories=[],matches=[],scorers=[],announcements=[],cards=[],sanctions=[];
+let admin=false,selected=null,clubs=[],categories=[],matches=[],cupMatches=[],scorers=[],announcements=[],cards=[],sanctions=[];
 
 function status(s,error=false){
   const box=$('#status');
@@ -36,7 +36,6 @@ const ESCUDOS_BASE='https://raw.githubusercontent.com/DEMAMF/liga-amf/main/escud
 
 const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase().replace(/\s+/g,' ');
 
-// nombre del club en la base (normalizado) -> archivo en la carpeta /escudos
 const crestFiles={
   'VILLA COOL':'VILLA COLL.png',
   'VILLA COLL':'VILLA COLL.png',
@@ -193,6 +192,20 @@ function render(){
 
   if($('#fixtures'))$('#fixtures').innerHTML=matches.filter(m=>String(m.category_id)===String(selected)).map(matchView).join('')||'<p>Sin partidos cargados en esta categoría.</p>';
 
+  // Renderizar la Copa Anual
+  const cupBox=$('#cupMatchesView');
+  if(cupBox){
+    cupBox.innerHTML=cupMatches.map(m=>`
+      <div class="match" style="background:#f0f8fd; border-left:4px solid var(--sky); margin-bottom:8px; padding:12px; border-radius:10px;">
+        <span style="font-weight:800; color:var(--navy); min-width:130px;">${esc(m.round)}</span>
+        <span>${clubLabel(m.home_id)}</span>
+        <b>${m.home_goals??'—'} – ${m.away_goals??'—'}</b>
+        <span>${clubLabel(m.away_id)}</span>
+      </div>
+      <small style="display:block; margin-bottom:12px; color:var(--muted);">Día: ${esc(m.match_date||'A confirmar')}</small>
+    `).join('')||'<p>Sin cruces de copa cargados.</p>';
+  }
+
   if($('#announcements'))$('#announcements').innerHTML=announcements.map(a=>`<div><h3>${esc(a.title)}</h3><p style="white-space:pre-wrap">${esc(a.body)}</p><small>${new Date(a.created_at).toLocaleDateString('es-AR')}</small><hr></div>`).join('')||'<p>Sin comunicados.</p>';
 
   const standings=calculateStandings(selected);
@@ -229,15 +242,16 @@ async function load(){
   if(!db)return;
 
   try{
-    const tables=['clubs','categories','matches','scorers','announcements','cards','disciplinary_sanctions'];
+    const tables=['clubs','categories','matches','cup_matches','scorers','announcements','cards','disciplinary_sanctions'];
     const result=await Promise.all(tables.map(t=>db.from(t).select('*')));
     const error=result.find(x=>x.error)?.error;
     if(error)throw error;
 
-    [clubs,categories,matches,scorers,announcements,cards,sanctions]=result.map(x=>x.data||[]);
+    [clubs,categories,matches,cupMatches,scorers,announcements,cards,sanctions]=result.map(x=>x.data||[]);
 
     categories.sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
     matches.sort((a,b)=>String(b.match_date||'').localeCompare(String(a.match_date||''))||b.id-a.id);
+    cupMatches.sort((a,b)=>a.id-b.id);
     announcements.sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
 
     selected=categories.some(x=>String(x.id)===String(selected))?selected:categories[0]?.id;
