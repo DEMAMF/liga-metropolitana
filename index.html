@@ -16,10 +16,7 @@ h1{font-size:clamp(29px,5vw,48px);line-height:1.08;margin:12px 0}h2{margin:0 0 1
 .club-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:12px;margin:16px 0 22px}.club-badge{background:#fff;border:1px solid var(--line);border-radius:15px;padding:13px 9px;text-align:center;box-shadow:0 5px 16px rgba(9,43,76,.05);min-width:0}.club-badge img{display:block;width:66px;height:66px;object-fit:contain;margin:0 auto 9px}.club-badge strong{font-size:12px;color:#254a67;display:block}.section-kicker{color:#3987b6;font-size:11px;font-weight:850;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}.home-title{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap}.home-title p{margin:0}.page{animation:fadein .2s ease}@keyframes fadein{from{opacity:.6;transform:translateY(4px)}to{opacity:1;transform:none}}
 .club-cell{display:inline-flex;align-items:center;gap:8px}
 .club-cell img{width:26px;height:26px;object-fit:contain;flex:none}
-.match span{display:flex;align-items:center}
-.match span:last-child{justify-content:flex-end}
-.match .club-cell img{width:34px;height:34px}
-@media(max-width:650px){header{padding:12px 14px;align-items:center}.brand img{width:58px;height:58px;border-radius:13px}.brand strong{font-size:16px}.brand small{font-size:9px}#loginToggle{font-size:11px;padding:9px}.tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:7px}.tabs button{font-size:12px;padding:10px 6px}main{padding:17px 12px 30px}.hero{border-radius:18px}.panel{padding:16px;border-radius:15px}.match{font-size:12px}.match b{font-size:16px;padding:5px 8px}.club-strip{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.club-badge{padding:9px 4px}.club-badge img{width:48px;height:48px}.club-badge strong{font-size:10px}.big{font-size:30px}.club-cell img{width:22px;height:22px}.match .club-cell img{width:26px;height:26px}}
+@media(max-width:650px){header{padding:12px 14px;align-items:center}.brand img{width:58px;height:58px;border-radius:13px}.brand strong{font-size:16px}.brand small{font-size:9px}#loginToggle{font-size:11px;padding:9px}.tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:7px}.tabs button{font-size:12px;padding:10px 6px}main{padding:17px 12px 30px}.hero{border-radius:18px}.panel{padding:16px;border-radius:15px}.match{font-size:12px}.match b{font-size:16px;padding:5px 8px}.club-strip{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.club-badge{padding:9px 4px}.club-badge img{width:48px;height:48px}.club-badge strong{font-size:10px}.big{font-size:30px}.club-cell img{width:22px;height:22px}}
 </style>
 </head>
 <body>
@@ -38,7 +35,6 @@ h1{font-size:clamp(29px,5vw,48px);line-height:1.08;margin:12px 0}h2{margin:0 0 1
 </section>
 <div id="status" class="status">Conectando…</div>
 
-<!-- BARRA DE SOLAPAS CON EL BOTÓN DE COPA ANUAL -->
 <div class="tabs" id="tabs">
   <button data-page="inicio" class="active">Inicio</button>
   <button data-page="fixture">Fixture y resultados</button>
@@ -72,7 +68,6 @@ h1{font-size:clamp(29px,5vw,48px);line-height:1.08;margin:12px 0}h2{margin:0 0 1
 
 <section class="page hidden" id="fixture"><div class="panel"><div class="section-kicker">Calendario deportivo</div><h2>Fixture y resultados</h2><label>Categoría<select class="filter"></select></label><div id="fixtures"></div></div></section>
 
-<!-- SECCIÓN VISIBLE DE LA COPA -->
 <section class="page hidden" id="copa">
   <div class="panel">
     <div class="section-kicker">Copa Anual Campeón de Clubes 2026</div>
@@ -89,9 +84,36 @@ h1{font-size:clamp(29px,5vw,48px);line-height:1.08;margin:12px 0}h2{margin:0 0 1
 <section class="page hidden" id="tribunal"><div class="panel"><div class="section-kicker">Resoluciones</div><h2>Tribunal de Disciplina</h2><p>Consulta pública de sanciones y partidos pendientes de cumplir.</p><div id="sanctionsList"></div></div></section>
 <section class="page hidden" id="documentos"><div class="panel"><div class="section-kicker">Comunicaciones oficiales</div><h2>Documentación Oficial</h2><p>Documentos oficiales de la Liga Metropolitana para consulta y descarga.</p><label>Tipo de documento<select id="documentType"><option value="">Todos los documentos</option><option value="tribunal">Tribunal de Disciplina</option><option value="reglamento">Reglamentos</option><option value="circular">Circulares oficiales</option></select></label><div id="documentsList" style="margin-top:18px">Cargando documentos...</div></div></section>
 <section class="page hidden" id="login"><div class="panel"><div class="section-kicker">Acceso restringido</div><h2>Ingreso privado</h2><form id="loginForm" class="form"><label>Correo electrónico<input id="email" type="email" required autocomplete="username"></label><label>Contraseña<input id="password" type="password" required autocomplete="current-password"></label><div style="align-self:end"><button>Ingresar</button></div></form><p>Solamente el usuario autorizado podrá cargar información.</p></div></section>
+
 <section class="page hidden" id="admin">
 <div class="panel"><div class="row" style="justify-content:space-between"><h2>Administración</h2><button class="alt" id="logout">Cerrar sesión</button></div><h3>Agregar club</h3><form id="clubForm" class="form"><label>Nombre del club<input name="name" required maxlength="100"></label><div style="align-self:end"><button>Agregar club</button></div></form></div>
-<div class="panel"><h3>Cargar resultado</h3><form id="matchForm" class="form"><label>Categoría<select name="category_id" class="categories" required></select></label><label>Fecha / jornada<input name="round" required placeholder="Fecha 1"></label><label>Día del partido<input name="match_date" type="date" required></label><label>Local<select name="home_id" class="clubs" required></select></label><label>Visitante<select name="away_id" class="clubs" required></select></label><label>Goles local<input name="home_goals" type="number" min="0" required></label><label>Goles visitante<input name="away_goals" type="number" min="0" required></label><div style="align-self:end"><button>Guardar resultado</button></div></form><h3>Resultados cargados</h3><div id="adminMatches"></div></div>
+
+<div class="panel">
+  <h3>Cargar resultado</h3>
+  <form id="matchForm" class="form">
+    <label>Competencia
+      <select name="competition_type" id="adminCompType" required>
+        <option value="liga">Liga Regular (Torneo)</option>
+        <option value="copa">Copa Anual 2026</option>
+      </select>
+    </label>
+    <label>Categoría<select name="category_id" class="categories" required></select></label>
+    <label>Fecha / Fase<input name="round" required placeholder="Ej.: Fecha 1 o Cuartos de Final"></label>
+    <label>Día del partido<input name="match_date" type="date" required></label>
+    <label>Local<select name="home_id" class="clubs" required></select></label>
+    <label>Visitante<select name="away_id" class="clubs" required></select></label>
+    <label>Goles local<input name="home_goals" type="number" min="0" required></label>
+    <label>Goles visitante<input name="away_goals" type="number" min="0" required></label>
+    <div style="align-self:end"><button>Guardar resultado</button></div>
+  </form>
+
+  <h3 style="margin-top:24px">Resultados cargados (Liga)</h3>
+  <div id="adminMatches"></div>
+
+  <h3 style="margin-top:24px">Resultados cargados (Copa Anual)</h3>
+  <div id="adminCupMatches"></div>
+</div>
+
 <div class="panel"><h3>Registrar goles individuales</h3><form id="scorerForm" class="form"><label>Jugador/a<input name="player" required></label><label>Club<select name="club_id" class="clubs" required></select></label><label>Categoría<select name="category_id" class="categories" required></select></label><label>Goles<input name="goals" type="number" min="1" required></label><div style="align-self:end"><button>Registrar</button></div></form><div id="adminScorers"></div></div>
 <div class="panel"><h3>Publicar comunicado</h3><form id="announcementForm" class="form"><label>Título<input name="title" required></label><label class="wide">Texto<textarea name="body" required></textarea></label><div><button>Publicar</button></div></form><div id="adminAnnouncements"></div></div>
 <div class="panel"><h3>Publicar documento oficial PDF</h3><p>Desde aquí podés subir reglamentos, circulares y resoluciones del Tribunal de Disciplina.</p><form id="documentForm" class="form"><label>Título del documento<input name="title" required maxlength="150" placeholder="Ej.: Resolución Tribunal - Fecha 5"></label><label>Tipo de documento<select name="doc_type" required><option value="">Seleccionar tipo</option><option value="tribunal">Tribunal de Disciplina</option><option value="reglamento">Reglamento</option><option value="circular">Circular oficial</option></select></label><label>Torneo<input name="tournament" placeholder="Ej.: Clausura 2026"></label><label>Fecha del documento<input name="doc_date" type="date" required></label><label class="wide">Archivo PDF<input name="pdf" type="file" accept="application/pdf,.pdf" required><small>Formato PDF. Tamaño máximo: 20 MB.</small></label><div class="wide"><button type="submit">Publicar documento PDF</button></div></form><h3 style="margin-top:25px">Documentos publicados</h3><div id="adminDocuments">Cargando documentos...</div></div>
