@@ -195,23 +195,33 @@ function render(){
 
   if($('#fixtures'))$('#fixtures').innerHTML=matches.filter(m=>String(m.category_id)===String(selected)).map(matchView).join('')||'<p>Sin partidos cargados en esta categoría.</p>';
 
-// Renderizar la Copa Anual: Local [Escudo + Nombre] --- Visitante [Nombre + Escudo]
+// Renderizar la Copa Anual con orden fijo: Local [Escudo + Nombre] --- Visitante [Nombre + Escudo]
   const cupBox=$('#cupMatchesView');
   if(cupBox){
     cupBox.innerHTML=cupMatches.map(m=>{
       const homeName = name(clubs, m.home_id);
       const awayName = name(clubs, m.away_id);
+      
+      const homeFile = crestFiles[norm(homeName)];
+      const awayFile = crestFiles[norm(awayName)];
+      
+      const homeImg = homeFile ? `<img src="${ESCUDOS_BASE}${encodeURIComponent(homeFile)}" style="width:28px;height:28px;object-fit:contain;flex:none;" onerror="this.remove()">` : '';
+      const awayImg = awayFile ? `<img src="${ESCUDOS_BASE}${encodeURIComponent(awayFile)}" style="width:28px;height:28px;object-fit:contain;flex:none;" onerror="this.remove()">` : '';
+
       return `
         <div class="match" style="background:#f0f8fd; border-left:4px solid var(--sky); margin-bottom:12px; padding:12px 16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
           <span style="font-weight:800; color:var(--navy); min-width:140px; font-size:13px;">${esc(m.round)}</span>
+          
           <div style="flex:1; display:flex; justify-content:flex-end; align-items:center; gap:8px; text-align:right;">
-            ${getCrestImg(homeName)}
+            ${homeImg}
             <span style="font-weight:600;">${esc(homeName)}</span>
           </div>
+          
           <b style="padding:6px 12px; background:#e2f2fc; border-radius:8px; font-size:15px; min-width:55px; text-align:center; margin:0 10px;">${m.home_goals??'—'} – ${m.away_goals??'—'}</b>
+          
           <div style="flex:1; display:flex; justify-content:flex-start; align-items:center; gap:8px; text-align:left;">
             <span style="font-weight:600;">${esc(awayName)}</span>
-            ${getCrestImg(awayName)}
+            ${awayImg}
           </div>
         </div>
         <small style="display:block; margin-bottom:16px; color:var(--muted); text-align:center; font-size:12px;">Día del partido: ${esc(m.match_date||'A confirmar')}</small>
