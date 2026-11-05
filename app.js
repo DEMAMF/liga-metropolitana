@@ -195,7 +195,7 @@ function render(){
 
   if($('#fixtures'))$('#fixtures').innerHTML=matches.filter(m=>String(m.category_id)===String(selected)).map(matchView).join('')||'<p>Sin partidos cargados en esta categoría.</p>';
 
-  // Renderizar la Copa Anual con escudos perfectamente alineados y del mismo tamaño
+// Renderizar la Copa Anual: Local [Escudo + Nombre] --- Visitante [Nombre + Escudo]
   const cupBox=$('#cupMatchesView');
   if(cupBox){
     cupBox.innerHTML=cupMatches.map(m=>{
@@ -205,13 +205,13 @@ function render(){
         <div class="match" style="background:#f0f8fd; border-left:4px solid var(--sky); margin-bottom:12px; padding:12px 16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
           <span style="font-weight:800; color:var(--navy); min-width:140px; font-size:13px;">${esc(m.round)}</span>
           <div style="flex:1; display:flex; justify-content:flex-end; align-items:center; gap:8px; text-align:right;">
-            <span style="font-weight:600;">${esc(homeName)}</span>
             ${getCrestImg(homeName)}
+            <span style="font-weight:600;">${esc(homeName)}</span>
           </div>
           <b style="padding:6px 12px; background:#e2f2fc; border-radius:8px; font-size:15px; min-width:55px; text-align:center; margin:0 10px;">${m.home_goals??'—'} – ${m.away_goals??'—'}</b>
           <div style="flex:1; display:flex; justify-content:flex-start; align-items:center; gap:8px; text-align:left;">
-            ${getCrestImg(awayName)}
             <span style="font-weight:600;">${esc(awayName)}</span>
+            ${getCrestImg(awayName)}
           </div>
         </div>
         <small style="display:block; margin-bottom:16px; color:var(--muted); text-align:center; font-size:12px;">Día del partido: ${esc(m.match_date||'A confirmar')}</small>
