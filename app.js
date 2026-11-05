@@ -192,17 +192,21 @@ function render(){
 
   if($('#fixtures'))$('#fixtures').innerHTML=matches.filter(m=>String(m.category_id)===String(selected)).map(matchView).join('')||'<p>Sin partidos cargados en esta categoría.</p>';
 
-  // Renderizar la Copa Anual
+// Renderizar la Copa Anual con diseño limpio y escudos alineados
   const cupBox=$('#cupMatchesView');
   if(cupBox){
     cupBox.innerHTML=cupMatches.map(m=>`
-      <div class="match" style="background:#f0f8fd; border-left:4px solid var(--sky); margin-bottom:8px; padding:12px; border-radius:10px;">
-        <span style="font-weight:800; color:var(--navy); min-width:130px;">${esc(m.round)}</span>
-        <span>${clubLabel(m.home_id)}</span>
-        <b>${m.home_goals??'—'} – ${m.away_goals??'—'}</b>
-        <span>${clubLabel(m.away_id)}</span>
+      <div class="match" style="background:#f0f8fd; border-left:4px solid var(--sky); margin-bottom:12px; padding:12px 16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <span style="font-weight:800; color:var(--navy); min-width:140px; font-size:13px;">${esc(m.round)}</span>
+        <div style="flex:1; display:flex; justify-content:flex-start; align-items:center; gap:8px;">
+          ${clubLabel(m.home_id)}
+        </div>
+        <b style="padding:6px 12px; background:#e2f2fc; border-radius:8px; font-size:15px; min-width:55px; text-align:center;">${m.home_goals??'—'} – ${m.away_goals??'—'}</b>
+        <div style="flex:1; display:flex; justify-content:flex-end; align-items:center; gap:8px;">
+          ${clubLabel(m.away_id)}
+        </div>
       </div>
-      <small style="display:block; margin-bottom:12px; color:var(--muted);">Día: ${esc(m.match_date||'A confirmar')}</small>
+      <small style="display:block; margin-bottom:16px; color:var(--muted); text-align:center; font-size:12px;">Día del partido: ${esc(m.match_date||'A confirmar')}</small>
     `).join('')||'<p>Sin cruces de copa cargados.</p>';
   }
 
