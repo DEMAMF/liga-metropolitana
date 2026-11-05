@@ -1,18 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Liga Metropolitana | Portal oficial</title>
+<style>
+:root{font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;color:#102b46;background:#f1f6fb;--navy:#092b4c;--blue:#14558a;--sky:#45a9df;--pale:#e5f3fc;--line:#d8e5ef;--muted:#647d91;--white:#fff;--shadow:0 10px 28px rgba(9,43,76,.08)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#eaf4fb 0,#f5f8fb 340px,#f4f7fa 100%);min-height:100vh}
+header{background:linear-gradient(115deg,#082744,#104d7e 68%,#197db2);color:#fff;padding:16px max(18px,calc((100vw - 1180px)/2));display:flex;justify-content:space-between;align-items:center;gap:16px;box-shadow:0 5px 22px rgba(4,31,55,.2);border-bottom:4px solid #53b5e8}
+.brand{display:flex;align-items:center;gap:15px;min-width:0}.brand img{width:76px;height:76px;object-fit:contain;background:#fff;border-radius:18px;padding:6px;box-shadow:0 4px 16px #001c3355}.brand strong{font-size:clamp(19px,3vw,27px);letter-spacing:.07em;display:block}.brand small{color:#cce8fa;letter-spacing:.12em;text-transform:uppercase;font-size:11px}
+h1{font-size:clamp(29px,5vw,48px);line-height:1.08;margin:12px 0}h2{margin:0 0 16px;color:var(--navy);font-size:clamp(20px,3vw,27px)}h3{color:var(--blue);margin:0 0 12px}small,p{color:var(--muted)}p{line-height:1.6}main{max-width:1180px;margin:auto;padding:26px 18px 42px}
+.hero{position:relative;overflow:hidden;background:linear-gradient(120deg,#0b3154,#145b91 65%,#2c91c6);color:#fff;border-radius:24px;padding:clamp(24px,5vw,48px);margin-bottom:20px;box-shadow:var(--shadow)}.hero:after{content:"";position:absolute;width:310px;height:310px;border:42px solid #ffffff12;border-radius:50%;right:-85px;top:-120px}.hero>*{position:relative;z-index:1}.hero small{color:#bce6ff;font-weight:800;letter-spacing:.18em}.hero h1{max-width:760px}.hero p{color:#e0f2ff;font-size:16px;max-width:650px;margin-bottom:0}
 #loginToggle{white-space:nowrap}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 24px;padding:9px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}button{background:var(--sky);border:0;border-radius:10px;padding:11px 16px;font-weight:750;cursor:pointer;color:#062d4b;transition:.18s ease}button:hover{filter:brightness(.96);transform:translateY(-1px)}button.alt{background:#e6f2fa;color:var(--navy);border:1px solid #c8deed}.tabs button{background:transparent;color:#34566f;border:1px solid transparent;padding:10px 13px}.tabs button:hover{background:#edf6fc}.tabs button.active{background:var(--navy);color:#fff;box-shadow:0 4px 12px #092b4c26}.hidden{display:none!important}
 .panel,.grid>div{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:16px;box-shadow:var(--shadow)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}.grid>div{margin:0;background:linear-gradient(145deg,#fff,#f0f8fd);border-top:3px solid var(--sky)}.grid>div small{font-weight:700;text-transform:uppercase;letter-spacing:.08em}.big{font-size:36px;font-weight:850;color:var(--navy);margin-top:7px}.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:560px;background:#fff}td,th{border-bottom:1px solid #e5edf3;padding:12px 10px;text-align:left}th{color:#315d7c;font-size:12px;text-transform:uppercase;letter-spacing:.06em;background:#edf6fc}tbody tr:hover{background:#f4faff}td.n,th.n{text-align:center}.match{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid #e5edf3;padding:15px 4px;color:#193e5b}.match b{font-size:21px;color:var(--navy);background:#eaf5fc;border-radius:9px;padding:5px 12px}.match span{flex:1}.match span:last-child{text-align:right}.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:13px}label{display:grid;gap:6px;font-size:13px;font-weight:700;color:#31536d}input,select,textarea{background:#fbfdff;color:#173b57;border:1px solid #cbdce8;border-radius:9px;padding:11px;width:100%;font:inherit;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--sky);box-shadow:0 0 0 3px #45a9df22}textarea{min-height:90px}.wide{grid-column:1/-1}.status{padding:12px 15px;border-radius:10px;background:#e1f3fb;color:#145078;border:1px solid #c3e5f5;margin:12px 0 16px}.error{background:#fff0f0;color:#9b2929;border-color:#f2c6c6}footer{text-align:center;color:#7890a3;padding:25px 15px;border-top:1px solid var(--line);background:#fff}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.doc-card{background:#f6fbff;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}.doc-card a{color:var(--blue)}
 .club-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:12px;margin:16px 0 22px}.club-badge{background:#fff;border:1px solid var(--line);border-radius:15px;padding:13px 9px;text-align:center;box-shadow:0 5px 16px rgba(9,43,76,.05);min-width:0}.club-badge img{display:block;width:66px;height:66px;object-fit:contain;margin:0 auto 9px}.club-badge strong{font-size:12px;color:#254a67;display:block}.section-kicker{color:#3987b6;font-size:11px;font-weight:850;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}.home-title{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap}.home-title p{margin:0}.page{animation:fadein .2s ease}@keyframes fadein{from{opacity:.6;transform:translateY(4px)}to{opacity:1;transform:none}}
-/* Nombre del club + escudo al lado */
 .club-cell{display:inline-flex;align-items:center;gap:8px}
 .club-cell img{width:26px;height:26px;object-fit:contain;flex:none}
-.match span{display:flex;align-items:center}
-@@ -38,9 +37,21 @@ <h1>La pasión de nuestra Liga, en un solo lugar.</h1>
-<p>Seguí los resultados, posiciones, fixture, goleadores, disciplina y toda la información oficial de los clubes.</p>
+@media(max-width:650px){header{padding:12px 14px;align-items:center}.brand img{width:58px;height:58px;border-radius:13px}.brand strong{font-size:16px}.brand small{font-size:9px}#loginToggle{font-size:11px;padding:9px}.tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:7px}.tabs button{font-size:12px;padding:10px 6px}main{padding:17px 12px 30px}.hero{border-radius:18px}.panel{padding:16px;border-radius:15px}.match{font-size:12px}.match b{font-size:16px;padding:5px 8px}.club-strip{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.club-badge{padding:9px 4px}.club-badge img{width:48px;height:48px}.club-badge strong{font-size:10px}.big{font-size:30px}.club-cell img{width:22px;height:22px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <img src="https://raw.githubusercontent.com/DEMAMF/liga-amf/main/logo_liga.png" alt="Logo Liga Metropolitana">
+    <div><strong>LIGA METROPOLITANA</strong><small>Portal oficial · Temporada 2026</small></div>
+  </div>
+  <button class="alt" id="loginToggle">Acceso administrador</button>
+</header>
+<main>
+<section class="hero">
+  <small>FÚTBOL · COMPETENCIA · COMUNIDAD</small>
+  <h1>La pasión de nuestra Liga, en un solo lugar.</h1>
+  <p>Seguí los resultados, posiciones, fixture, goleadores, disciplina y toda la información oficial de los clubes.</p>
 </section>
 <div id="status" class="status">Conectando…</div>
 
-<!-- BARRA DE SOLAPAS CON EL BOTÓN DE COPA ANUAL -->
 <div class="tabs" id="tabs">
-<button data-page="inicio" class="active">Inicio</button><button data-page="fixture">Fixture y resultados</button><button data-page="copa">Copa Anual 2026</button><button data-page="tabla">Posiciones</button><button data-page="goles">Goleadores</button><button data-page="general">Tabla General Anual</button><button data-page="fairplay">Fair Play</button><button data-page="tribunal">Tribunal de Disciplina</button><button data-page="documentos">Documentación Oficial</button><button data-page="admin" class="hidden" id="adminTab">Administración</button>
   <button data-page="inicio" class="active">Inicio</button>
   <button data-page="fixture">Fixture y resultados</button>
   <button data-page="copa">Copa Anual 2026</button>
@@ -26,17 +49,25 @@
 </div>
 
 <section class="page" id="inicio">
-<div class="grid"><div><small>Clubes</small><div class="big" id="clubN">—</div></div><div><small>Partidos jugados</small><div class="big" id="matchN">—</div></div><div><small>Goles convertidos</small><div class="big" id="goalN">—</div></div></div>
-<div class="panel" style="margin-top:18px">
-@@ -58,8 +69,19 @@ <h1>La pasión de nuestra Liga, en un solo lugar.</h1>
-<div class="panel"><div class="section-kicker">Actualidad</div><h2>Últimos resultados</h2><div id="recent"></div></div>
-<div class="panel"><div class="section-kicker">Información institucional</div><h2>Comunicados</h2><div id="announcements"></div></div>
+  <div class="grid"><div><small>Clubes</small><div class="big" id="clubN">—</div></div><div><small>Partidos jugados</small><div class="big" id="matchN">—</div></div><div><small>Goles convertidos</small><div class="big" id="goalN">—</div></div></div>
+  <div class="panel" style="margin-top:18px">
+    <div class="home-title"><div><div class="section-kicker">Nuestros protagonistas</div><h2>Clubes participantes</h2></div><p>Los colores y escudos de nuestra Liga</p></div>
+    <div class="club-strip">
+      <div class="club-badge"><img src="https://raw.githubusercontent.com/DEMAMF/liga-amf/main/escudos/VILLA%20COLL.png" alt="Villa Cool"><strong>Villa Cool</strong></div>
+      <div class="club-badge"><img src="https://raw.githubusercontent.com/DEMAMF/liga-amf/main/escudos/CDSV.png" alt="CDSV"><strong>CDSV</strong></div>
+      <div class="club-badge"><img src="https://raw.githubusercontent.com/DEMAMF/liga-amf/main/escudos/DEFENSORES%20DE%20GLEW.png" alt="Defensores de Glew"><strong>Defensores de Glew</strong></div>
+      <div class="club-badge"><img src="https://raw.githubusercontent.com/DEMAMF/liga-amf/main/escudos/MALVINAS.png" alt="Malvinas"><strong>Malvinas</strong></div>
+      <div class="club-badge"><img src="https://raw.githubusercontent.com/DEMAMF/liga-amf/main/escudos/LIRICO.png" alt="Lírico Futsal"><strong>Lírico Futsal</strong></div>
+      <div class="club-badge"><img src="https://raw.githubusercontent.com/DEMAMF/liga-amf/main/escudos/SAKURA.png" alt="Sakura"><strong>Sakura</strong></div>
+      <div class="club-badge"><img src="https://raw.githubusercontent.com/DEMAMF/liga-amf/main/escudos/SANTA%20ANA.png" alt="Santa Ana"><strong>Santa Ana</strong></div>
+    </div>
+  </div>
+  <div class="panel"><div class="section-kicker">Actualidad</div><h2>Últimos resultados</h2><div id="recent"></div></div>
+  <div class="panel"><div class="section-kicker">Información institucional</div><h2>Comunicados</h2><div id="announcements"></div></div>
 </section>
 
 <section class="page hidden" id="fixture"><div class="panel"><div class="section-kicker">Calendario deportivo</div><h2>Fixture y resultados</h2><label>Categoría<select class="filter"></select></label><div id="fixtures"></div></div></section>
-<section class="page hidden" id="copa"><div class="panel"><div class="section-kicker">Copa Anual Campeón de Clubes 2026</div><h2>Cruces y Canchas</h2><p>Cuartos de final, semifinales y final.</p><div id="cupMatchesView" style="margin-top:16px;">Cargando cruces...</div></div></section>
 
-<!-- SECCIÓN VISIBLE DE LA COPA -->
 <section class="page hidden" id="copa">
   <div class="panel">
     <div class="section-kicker">Copa Anual Campeón de Clubes 2026</div>
@@ -49,3 +80,45 @@
 <section class="page hidden" id="tabla"><div class="panel"><div class="section-kicker">Competencia</div><h2>Tabla de posiciones</h2><label>Categoría<select class="filter"></select></label><div class="scroll"><table><thead><tr><th>Pos.</th><th>Club</th><th class="n">PTS</th><th class="n">PJ</th><th class="n">PG</th><th class="n">PE</th><th class="n">PP</th><th class="n">GF</th><th class="n">GC</th><th class="n">DG</th></tr></thead><tbody id="standings"></tbody></table></div></div></section>
 <section class="page hidden" id="goles"><div class="panel"><div class="section-kicker">Estadísticas</div><h2>Goleadores</h2><label>Categoría<select class="filter"></select></label><div class="scroll"><table><thead><tr><th>Jugador/a</th><th>Club</th><th class="n">Goles</th></tr></thead><tbody id="scorers"></tbody></table></div></div></section>
 <section class="page hidden" id="general"><div class="panel"><div class="section-kicker">Ranking institucional</div><h2>Tabla General Anual por Clubes</h2><p>Se sumarán los puntos obtenidos por cada club en todas las categorías.</p><div class="scroll"><table><thead><tr><th>Pos.</th><th>Club</th><th class="n">Puntos totales</th></tr></thead><tbody id="generalStandings"></tbody></table></div></div></section>
+<section class="page hidden" id="fairplay"><div class="panel"><div class="section-kicker">Conducta deportiva</div><h2>Fair Play</h2><p>Tarjeta amarilla: 1 punto. Tarjeta roja: 3 puntos.</p><div id="fairPlayTable"></div></div></section>
+<section class="page hidden" id="tribunal"><div class="panel"><div class="section-kicker">Resoluciones</div><h2>Tribunal de Disciplina</h2><p>Consulta pública de sanciones y partidos pendientes de cumplir.</p><div id="sanctionsList"></div></div></section>
+<section class="page hidden" id="documentos"><div class="panel"><div class="section-kicker">Comunicaciones oficiales</div><h2>Documentación Oficial</h2><p>Documentos oficiales de la Liga Metropolitana para consulta y descarga.</p><label>Tipo de documento<select id="documentType"><option value="">Todos los documentos</option><option value="tribunal">Tribunal de Disciplina</option><option value="reglamento">Reglamentos</option><option value="circular">Circulares oficiales</option></select></label><div id="documentsList" style="margin-top:18px">Cargando documentos...</div></div></section>
+<section class="page hidden" id="login"><div class="panel"><div class="section-kicker">Acceso restringido</div><h2>Ingreso privado</h2><form id="loginForm" class="form"><label>Correo electrónico<input id="email" type="email" required autocomplete="username"></label><label>Contraseña<input id="password" type="password" required autocomplete="current-password"></label><div style="align-self:end"><button>Ingresar</button></div></form><p>Solamente el usuario autorizado podrá cargar información.</p></div></section>
+
+<section class="page hidden" id="admin">
+<div class="panel"><div class="row" style="justify-content:space-between"><h2>Administración</h2><button class="alt" id="logout">Cerrar sesión</button></div><h3>Agregar club</h3><form id="clubForm" class="form"><label>Nombre del club<input name="name" required maxlength="100"></label><div style="align-self:end"><button>Agregar club</button></div></form></div>
+
+<div class="panel">
+  <h3>Cargar resultado</h3>
+  <form id="matchForm" class="form">
+    <label>Competencia
+      <select name="competition_type" id="adminCompType" required>
+        <option value="liga">Liga Regular (Torneo)</option>
+        <option value="copa">Copa Anual 2026</option>
+      </select>
+    </label>
+    <label>Categoría<select name="category_id" class="categories" required></select></label>
+    <label>Fecha / Fase<input name="round" required placeholder="Ej.: Fecha 1 o Cuartos de Final"></label>
+    <label>Día del partido<input name="match_date" type="date" required></label>
+    <label>Local<select name="home_id" class="clubs" required></select></label>
+    <label>Visitante<select name="away_id" class="clubs" required></select></label>
+    <label>Goles local<input name="home_goals" type="number" min="0" required></label>
+    <label>Goles visitante<input name="away_goals" type="number" min="0" required></label>
+    <div style="align-self:end"><button>Guardar resultado</button></div>
+  </form>
+
+  <h3 style="margin-top:24px">Resultados cargados (Liga)</h3>
+  <div id="adminMatches"></div>
+
+  <h3 style="margin-top:24px">Resultados cargados (Copa Anual)</h3>
+  <div id="adminCupMatches"></div>
+</div>
+
+<div class="panel"><h3>Registrar goles individuales</h3><form id="scorerForm" class="form"><label>Jugador/a<input name="player" required></label><label>Club<select name="club_id" class="clubs" required></select></label><label>Categoría<select name="category_id" class="categories" required></select></label><label>Goles<input name="goals" type="number" min="1" required></label><div style="align-self:end"><button>Registrar</button></div></form><div id="adminScorers"></div></div>
+<div class="panel"><h3>Publicar comunicado</h3><form id="announcementForm" class="form"><label>Título<input name="title" required></label><label class="wide">Texto<textarea name="body" required></textarea></label><div><button>Publicar</button></div></form><div id="adminAnnouncements"></div></div>
+<div class="panel"><h3>Publicar documento oficial PDF</h3><p>Desde aquí podés subir reglamentos, circulares y resoluciones del Tribunal de Disciplina.</p><form id="documentForm" class="form"><label>Título del documento<input name="title" required maxlength="150" placeholder="Ej.: Resolución Tribunal - Fecha 5"></label><label>Tipo de documento<select name="doc_type" required><option value="">Seleccionar tipo</option><option value="tribunal">Tribunal de Disciplina</option><option value="reglamento">Reglamento</option><option value="circular">Circular oficial</option></select></label><label>Torneo<input name="tournament" placeholder="Ej.: Clausura 2026"></label><label>Fecha del documento<input name="doc_date" type="date" required></label><label class="wide">Archivo PDF<input name="pdf" type="file" accept="application/pdf,.pdf" required><small>Formato PDF. Tamaño máximo: 20 MB.</small></label><div class="wide"><button type="submit">Publicar documento PDF</button></div></form><h3 style="margin-top:25px">Documentos publicados</h3><div id="adminDocuments">Cargando documentos...</div></div>
+</section>
+</main>
+<footer>Liga Metropolitana · Portal oficial · Temporada 2026</footer>
+<script src="config.js"></script><script type="module" src="app.js"></script>
+</body></html>
