@@ -1,4 +1,3 @@
-
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2';
 
 const cfg=window.LIGA_CONFIG;
@@ -29,6 +28,36 @@ $$('#tabs button').forEach(b=>b.onclick=()=>page(b.dataset.page));
 
 const name=(list,id)=>list.find(x=>String(x.id)===String(id))?.name||'—';
 
+// =====================================
+// ESCUDOS DE LOS CLUBES
+// =====================================
+
+const ESCUDOS_BASE='https://raw.githubusercontent.com/DEMAMF/liga-amf/main/escudos/';
+
+const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase().replace(/\s+/g,' ');
+
+// nombre del club en la base (normalizado) -> archivo en la carpeta /escudos
+const crestFiles={
+  'VILLA COOL':'VILLA COLL.png',
+  'VILLA COLL':'VILLA COLL.png',
+  'CDSV':'CDSV.png',
+  'DEFENSORES DE GLEW':'DEFENSORES DE GLEW.png',
+  'MALVINAS':'MALVINAS.png',
+  'LIRICO':'LIRICO.png',
+  'LIRICO FUTSAL':'LIRICO.png',
+  'SAKURA':'SAKURA.png',
+  'SANTA ANA':'SANTA ANA.png'
+};
+
+function clubLabel(id){
+  const n=name(clubs,id);
+  const file=crestFiles[norm(n)];
+  const img=file
+    ?`<img src="${ESCUDOS_BASE}${encodeURIComponent(file)}" alt="" loading="lazy" onerror="this.remove()">`
+    :'';
+  return `<span class="club-cell"><span>${esc(n)}</span>${img}</span>`;
+}
+
 function options(sel,list){
   $$(sel).forEach(el=>{
     const old=el.value;
@@ -38,7 +67,7 @@ function options(sel,list){
 }
 
 function matchView(m){
-  return `<div class="match"><span>${esc(name(clubs,m.home_id))}</span><b>${m.home_goals??'—'} – ${m.away_goals??'—'}</b><span>${esc(name(clubs,m.away_id))}</span></div><small>${esc(name(categories,m.category_id))} · ${esc(m.round)} · ${esc(m.match_date||'Fecha pendiente')}</small>`;
+  return `<div class="match"><span>${clubLabel(m.home_id)}</span><b>${m.home_goals??'—'} – ${m.away_goals??'—'}</b><span>${clubLabel(m.away_id)}</span></div><small>${esc(name(categories,m.category_id))} · ${esc(m.round)} · ${esc(m.match_date||'Fecha pendiente')}</small>`;
 }
 
 function calculateStandings(categoryId){
@@ -93,7 +122,7 @@ function renderGeneral(){
 
   body.innerHTML=Object.values(totals)
     .sort((a,b)=>b.pts-a.pts||name(clubs,a.id).localeCompare(name(clubs,b.id),'es'))
-    .map((x,i)=>`<tr><td>${i+1}</td><td>${esc(name(clubs,x.id))}</td><td class="n"><b>${x.pts}</b></td></tr>`)
+    .map((x,i)=>`<tr><td>${i+1}</td><td>${clubLabel(x.id)}</td><td class="n"><b>${x.pts}</b></td></tr>`)
     .join('');
 }
 
@@ -117,11 +146,11 @@ function renderFairPlay(){
     <thead><tr><th>Jugador/a</th><th>Club</th><th>Categoría</th><th>Tarjeta</th><th class="n">Puntos</th><th>Partido</th></tr></thead>
     <tbody>${rows.map(c=>`<tr>
       <td>${esc(c.player_name)}</td>
-      <td>${esc(name(clubs,c.club_id))}</td>
+      <td>${clubLabel(c.club_id)}</td>
       <td>${esc(name(categories,c.category_id))}</td>
       <td>${String(c.card_type).toLowerCase()==='roja'?'🔴 Roja':'🟨 Amarilla'}</td>
       <td class="n">${c.points}</td>
-      <td>${c.match?`${esc(name(clubs,c.match.home_id))} ${c.match.home_goals??'—'}-${c.match.away_goals??'—'} ${esc(name(clubs,c.match.away_id))} · ${esc(c.match.round)}`:esc(c.notes||c.card_date||'—')}</td>
+      <td>${c.match?`${clubLabel(c.match.home_id)} ${c.match.home_goals??'—'}-${c.match.away_goals??'—'} ${clubLabel(c.match.away_id)} · ${esc(c.match.round)}`:esc(c.notes||c.card_date||'—')}</td>
     </tr>`).join('')}</tbody>
   </table></div><p>Amarilla: 1 punto. Roja: 3 puntos. Menor puntaje indica mejor Fair Play.</p>`;
 }
@@ -143,7 +172,7 @@ function renderSanctions(){
       const remaining=Math.max(0,imposed-served);
       return `<tr>
         <td>${esc(s.player_name)}</td>
-        <td>${esc(name(clubs,s.club_id))}</td>
+        <td>${clubLabel(s.club_id)}</td>
         <td>${esc(name(categories,s.category_id))}</td>
         <td>${esc(s.reason||s.notes||'—')}</td>
         <td class="n">${imposed}</td>
@@ -167,7 +196,7 @@ function render(){
   if($('#announcements'))$('#announcements').innerHTML=announcements.map(a=>`<div><h3>${esc(a.title)}</h3><p style="white-space:pre-wrap">${esc(a.body)}</p><small>${new Date(a.created_at).toLocaleDateString('es-AR')}</small><hr></div>`).join('')||'<p>Sin comunicados.</p>';
 
   const standings=calculateStandings(selected);
-  if($('#standings'))$('#standings').innerHTML=standings.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(name(clubs,x.id))}</td>${['pj','pg','pe','pp','gf','gc'].map(k=>`<td class="n">${x[k]}</td>`).join('')}<td class="n">${x.gf-x.gc}</td><td class="n"><b>${x.pts}</b></td></tr>`).join('');
+  if($('#standings'))$('#standings').innerHTML=standings.map((x,i)=>`<tr><td>${i+1}</td><td>${clubLabel(x.id)}</td>${['pj','pg','pe','pp','gf','gc'].map(k=>`<td class="n">${x[k]}</td>`).join('')}<td class="n">${x.gf-x.gc}</td><td class="n"><b>${x.pts}</b></td></tr>`).join('');
 
   const grouped=new Map();
   scorers.filter(s=>String(s.category_id)===String(selected)).forEach(s=>{
@@ -177,7 +206,7 @@ function render(){
     grouped.set(key,x);
   });
 
-  if($('#scorers'))$('#scorers').innerHTML=[...grouped.values()].sort((a,b)=>b.goals-a.goals).map(s=>`<tr><td>${esc(s.player)}</td><td>${esc(name(clubs,s.club_id))}</td><td class="n">${s.goals}</td></tr>`).join('')||'<tr><td colspan="3">Sin goleadores cargados.</td></tr>';
+  if($('#scorers'))$('#scorers').innerHTML=[...grouped.values()].sort((a,b)=>b.goals-a.goals).map(s=>`<tr><td>${esc(s.player)}</td><td>${clubLabel(s.club_id)}</td><td class="n">${s.goals}</td></tr>`).join('')||'<tr><td colspan="3">Sin goleadores cargados.</td></tr>';
 
   renderGeneral();
   renderFairPlay();
