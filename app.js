@@ -405,7 +405,7 @@ $('#matchForm')?.addEventListener('submit',async e=>{
   }
 
   if(payload.home_id === payload.away_id){
-    status('El club local y el visitante deben ser distintos.', true);
+    status('El local y el visitante deben ser distintos.', true);
     return;
   }
 
