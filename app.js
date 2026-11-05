@@ -195,7 +195,10 @@ function render(){
 
   if($('#fixtures'))$('#fixtures').innerHTML=matches.filter(m=>String(m.category_id)===String(selected)).map(matchView).join('')||'<p>Sin partidos cargados en esta categoría.</p>';
 
-// Renderizar la Copa Anual con orden fijo: Local [Escudo + Nombre] --- Visitante [Nombre + Escudo]
+  // =========================================================================
+  // RENDERIZADO DE LA COPA ANUAL 2026
+  // Estructura: Local (Escudo + Nombre) --- Resultado --- Visitante (Nombre + Escudo)
+  // =========================================================================
   const cupBox=$('#cupMatchesView');
   if(cupBox){
     cupBox.innerHTML=cupMatches.map(m=>{
@@ -210,8 +213,10 @@ function render(){
 
       return `
         <div class="match" style="background:#f0f8fd; border-left:4px solid var(--sky); margin-bottom:12px; padding:12px 16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+          
           <span style="font-weight:800; color:var(--navy); min-width:140px; font-size:13px;">${esc(m.round)}</span>
           
+          <!-- LADO IZQUIERDO (LOCAL): Escudo + Nombre -->
           <div style="flex:1; display:flex; justify-content:flex-end; align-items:center; gap:8px; text-align:right;">
             ${homeImg}
             <span style="font-weight:600;">${esc(homeName)}</span>
@@ -219,10 +224,12 @@ function render(){
           
           <b style="padding:6px 12px; background:#e2f2fc; border-radius:8px; font-size:15px; min-width:55px; text-align:center; margin:0 10px;">${m.home_goals??'—'} – ${m.away_goals??'—'}</b>
           
+          <!-- LADO DERECHO (VISITANTE): Nombre + Escudo -->
           <div style="flex:1; display:flex; justify-content:flex-start; align-items:center; gap:8px; text-align:left;">
             <span style="font-weight:600;">${esc(awayName)}</span>
             ${awayImg}
           </div>
+
         </div>
         <small style="display:block; margin-bottom:16px; color:var(--muted); text-align:center; font-size:12px;">Día del partido: ${esc(m.match_date||'A confirmar')}</small>
       `;
