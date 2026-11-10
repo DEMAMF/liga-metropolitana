@@ -147,17 +147,24 @@ function renderGeneral(){
     .join('');
 }
 
+function cardKind(value){
+  const type=String(value||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').trim().toLowerCase();
+  if(['roja','red','red card','expulsion'].includes(type))return 'red';
+  if(['amarilla','yellow','yellow card'].includes(type))return 'yellow';
+  return 'yellow';
+}
+
 function renderFairPlay(){
   const box=$('#fairPlayTable');
   if(!box)return;
   if(!cards.length){box.innerHTML='<p>Todavía no hay tarjetas registradas.</p>';return;}
 
   const rows=cards.map(c=>{
-    const type=String(c.card_type||'').toLowerCase();
-    const points=type==='roja'?3:type==='amarilla'?1:0;
+    const kind=cardKind(c.card_type);
+    const points=kind==='red'?3:1;
     const match=matches.find(m=>String(m.id)===String(c.match_id));
-    return {...c,points,match};
-  }).sort((a,b)=>b.points-a.points||String(a.player_name).localeCompare(String(b.player_name),'es'));
+    return {...c,kind,points,match};
+  }).sort((a,b)=>b.points-a.points||String(a.player_name||'').localeCompare(String(b.player_name||''),'es'));
 
   box.innerHTML=`<div class="scroll"><table>
     <thead><tr><th>Jugador/a</th><th>Club</th><th>Categoría</th><th>Tarjeta</th><th class="n">Puntos</th><th>Partido</th></tr></thead>
@@ -165,7 +172,7 @@ function renderFairPlay(){
       <td>${esc(c.player_name)}</td>
       <td>${fairPlayClubLabel(c)}</td>
       <td>${esc(name(categories,c.category_id))}</td>
-      <td>${String(c.card_type).toLowerCase()==='roja'?'🔴 Roja':'🟨 Amarilla'}</td>
+      <td><span class="card-chip ${c.kind}">${c.kind==='red'?'Roja':'Amarilla'}</span></td>
       <td class="n">${c.points}</td>
       <td>${c.match?`${name(clubs,c.match.home_id)} vs ${name(clubs,c.match.away_id)}`:esc(c.notes||c.card_date||'—')}</td>
     </tr>`).join('')}</tbody>
@@ -420,7 +427,7 @@ async function loadDocuments(){
           <h4 style="margin:0 0 4px; color:var(--navy)">${esc(d.title)}</h4>
           <p style="margin:0; font-size:12px; color:var(--muted)">${esc(types[d.doc_type]||d.doc_type)} · ${esc(d.doc_date||'—')}</p>
         </div>
-        <a href="${esc(file)}" target="_blank" rel="noopener"><button type="button" style="padding:8px 14px; font-size:13px">Descargar PDF</button></a>
+        <a class="download-link" href="${esc(file)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir documento PDF: ${esc(d.title)}">Descargar PDF</a>
       </div>
     `;
   }).join('');
@@ -465,9 +472,12 @@ $('#adminDocuments')?.addEventListener('click',async e=>{
   const button=e.target.closest('[data-doc-delete]');
   if(!button||!admin||!confirm('¿Eliminar este documento?'))return;
   const {data:doc}=await db.from('official_documents').select('file_path').eq('id',button.dataset.docDelete).single();
-  if(doc) await db.storage.from('documentos-oficiales').remove([doc.file_path]);
-  await db.from('official_documents').delete().eq('id',button.dataset.docDelete);
-  status('Documento eliminado.'); loadDocuments(); loadAdminDocuments();
+  if(!doc){status('No se pudo localizar el documento.',true);return;}
+  const {error:removeError}=await db.storage.from('documentos-oficiales').remove([doc.file_path]);
+  if(removeError){status('No se pudo eliminar el archivo: '+removeError.message,true);return;}
+  const {error:deleteError}=await db.from('official_documents').delete().eq('id',button.dataset.docDelete);
+  if(deleteError){status('El archivo se eliminó, pero no se pudo quitar el registro: '+deleteError.message,true);return;}
+  status('Documento eliminado.'); await loadDocuments(); await loadAdminDocuments();
 });
 
 if(!ready){
