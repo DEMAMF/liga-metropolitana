@@ -28,12 +28,21 @@ function crest(club, size=34) {
 }
 function team(club) { return club ? '<span class="copa-team">'+crest(club)+'<b>'+esc(club)+'</b></span>' : '<span class="copa-team copa-pending">Por definir</span>'; }
 function score(m) { return m && m.home_goals !== null && m.away_goals !== null ? m.home_goals+' - '+m.away_goals : 'vs'; }
-function matchFor(tie, cat) { return matches.find(m => m.tie_code===tie && m.category===cat); }
+function matchFor(tie, cat) {
+  const match=matches.find(m => m.tie_code===tie && m.category===cat);
+  const current=ties.find(t => t.id===tie);
+  if(!match||!current?.home||!current?.away)return null;
+  return match.home_club===current.home&&match.away_club===current.away?match:null;
+}
+function fairPlayPoints(cardType) {
+  const type=String(cardType||'').trim().toLowerCase();
+  return ['roja','red','red card','red_card','expulsion'].includes(type)?3:1;
+}
 
 function tieStats(tieId) {
   const rows = matches.filter(m => m.tie_code===tieId && m.home_goals !== null && m.away_goals !== null);
   const base = ties.find(t=>t.id===tieId);
-  if (!base || !base.home || !base.away || rows.length !== 8) return null;
+  if (!base || !base.home || !base.away || rows.length !== 8 || rows.some(m=>m.home_club!==base.home||m.away_club!==base.away)) return null;
   const stats = {};
   [base.home,base.away].forEach(c=>stats[c]={club:c,pts:0,gf:0,gc:0,fp:0});
   rows.forEach(m=>{
@@ -46,7 +55,7 @@ function tieStats(tieId) {
     else {h.pts++;a.pts++;}
   });
   cards.filter(c=>rows.some(m=>m.id===c.match_id)).forEach(c=>{
-    if(stats[c.club_name])stats[c.club_name].fp += c.card_type==='Roja'?3:1;
+    if(stats[c.club_name])stats[c.club_name].fp += fairPlayPoints(c.card_type);
   });
   const sorted=Object.values(stats).sort((a,b)=>b.pts-a.pts||b.gf-a.gf||(b.gf-b.gc)-(a.gf-a.gc)||a.fp-b.fp);
   const [one,two]=sorted;
@@ -81,7 +90,7 @@ function renderAggregate() {
     h.pj++;a.pj++;h.gf+=m.home_goals;h.gc+=m.away_goals;a.gf+=m.away_goals;a.gc+=m.home_goals;
     if(m.home_goals>m.away_goals)h.pts+=3;else if(m.home_goals<m.away_goals)a.pts+=3;else{h.pts++;a.pts++;}
   });
-  cards.forEach(c=>{if(totals[c.club_name])totals[c.club_name].fp+=c.card_type==='Roja'?3:1;});
+  cards.forEach(c=>{if(totals[c.club_name])totals[c.club_name].fp+=fairPlayPoints(c.card_type);});
   const rows=Object.values(totals).sort((a,b)=>b.pts-a.pts||b.gf-a.gf||(b.gf-b.gc)-(a.gf-a.gc)||a.fp-b.fp);
   $('#copaAggregate').innerHTML=rows.map((r,i)=>'<tr><td>'+ (i+1)+'</td><td><span class="copa-table-team">'+crest(r.club)+esc(r.club)+'</span></td><td>'+r.pts+'</td><td>'+r.pj+'</td><td>'+r.gf+'</td><td>'+r.gc+'</td><td>'+(r.gf-r.gc)+'</td></tr>').join('');
   $('#copaFairplay').innerHTML=rows.slice().sort((a,b)=>a.fp-b.fp).map((r,i)=>'<tr><td>'+(i+1)+'</td><td><span class="copa-table-team">'+crest(r.club)+esc(r.club)+'</span></td><td>'+r.fp+'</td></tr>').join('');
@@ -134,7 +143,7 @@ async function saveScore(form) {
   const tie=ties.find(x=>x.id===t);resolveBracket();
   if(!tie?.home||!tie?.away){alert('Este cruce todavía no tiene los dos equipos definidos.');return;}
   const payload={tie_code:t,category:cat,home_club:tie.home,away_club:tie.away,match_date:form.elements.match_date.value||null,home_goals:Number(form.elements.home_goals.value),away_goals:Number(form.elements.away_goals.value)};
-  const existing=matchFor(t,cat);
+  const existing=matches.find(m=>m.tie_code===t&&m.category===cat);
   const result=existing?await db.from('copa_matches').update(payload).eq('id',existing.id):await db.from('copa_matches').insert(payload);
   if(result.error){$('#copaStatus').textContent='Error al guardar: '+result.error.message;return;}
   await load();
