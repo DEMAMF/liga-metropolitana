@@ -148,9 +148,9 @@ function renderGeneral(){
 }
 
 function cardKind(value){
-  const type=String(value||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').trim().toLowerCase();
-  if(['roja','red','red card','expulsion'].includes(type))return 'red';
-  if(['amarilla','yellow','yellow card'].includes(type))return 'yellow';
+  const type=String(value||'').trim().toLowerCase();
+  if(['roja','red','red card','red_card','expulsion'].includes(type))return 'red';
+  if(['amarilla','yellow','yellow card','yellow_card'].includes(type))return 'yellow';
   return 'yellow';
 }
 
