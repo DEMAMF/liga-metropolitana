@@ -45,10 +45,10 @@ const crestFiles={
   'SANTA ANA':'SANTA ANA.png'
 };
 
-function getCrestImg(clubName){
+function getCrestImg(clubName,eager=false){
   const file=crestFiles[norm(clubName)];
   if(!file)return '';
-  return `<img src="${ESCUDOS_BASE}${encodeURIComponent(file)}" alt="" loading="lazy" style="width:28px;height:28px;object-fit:contain;flex:none;" onerror="this.remove()">`;
+  return `<img src="${ESCUDOS_BASE}${encodeURIComponent(file)}" alt="" loading="${eager?'eager':'lazy'}" style="display:inline-block;width:28px;height:28px;object-fit:contain;flex:none;" onerror="this.remove()">`;
 }
 
 function clubLabel(id){
@@ -61,7 +61,7 @@ function fairPlayClubLabel(card){
   const raw=card.club_id??card.club_name??card.club;
   const club=clubs.find(x=>String(x.id)===String(raw))||clubs.find(x=>norm(x.name)===norm(raw));
   const clubName=club?.name||raw||'—';
-  return `<span class="club-cell">${getCrestImg(clubName)}<span>${esc(clubName)}</span></span>`;
+  return `<span class="club-cell">${getCrestImg(clubName,true)}<span>${esc(clubName)}</span></span>`;
 }
 
 function options(sel,list){
