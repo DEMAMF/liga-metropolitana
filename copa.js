@@ -134,7 +134,7 @@ async function checkAdmin() {
   admin=!error&&data===true;
   $('#copaAdminPanel').hidden=!admin;
   $('#copaLoginInfo').textContent=admin?'Administrador habilitado.':'Ingresá con tu cuenta administradora desde el acceso de la Liga.';
-  if(admin)renderAdminMatches();
+  if(admin){renderAdminMatches();renderCardMatchOptions();}
 }
 async function saveScore(form) {
   const t=form.dataset.tie,cat=form.dataset.category;
