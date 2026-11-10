@@ -162,6 +162,75 @@ footer{text-align:center;color:var(--muted);padding:30px 20px;border-top:1px sol
   .tabs{overflow-x:auto;padding:6px;flex-wrap:nowrap}
   .tabs button{white-space:nowrap;padding:8px 12px;font-size:13px}
 }
+
+/* --- Renovación visual: identidad azul institucional --- */
+:root{
+  --navy:#071b33;--blue:#1769aa;--sky:#58b8ef;--light-bg:#edf4fb;
+  --border:#d7e3ef;--muted:#61758b;--white:#fff;
+  --shadow:0 12px 34px rgba(7,27,51,.075),0 2px 8px rgba(7,27,51,.035);
+  --radius:18px;
+}
+body{background:linear-gradient(180deg,#eaf2fa 0,#f5f8fc 340px,#f7f9fc 100%);color:#10243b}
+header{
+  position:sticky;top:0;z-index:20;
+  background:linear-gradient(112deg,#06172c 0%,#0b2d52 66%,#145b91 100%);
+  border-bottom:3px solid #43a9e6;
+  padding-top:15px;padding-bottom:15px;
+  box-shadow:0 8px 26px rgba(4,20,39,.2);
+  backdrop-filter:blur(14px)
+}
+.brand img{width:60px;height:60px;border:1px solid rgba(255,255,255,.35);border-radius:15px}
+.brand strong{font-size:23px;letter-spacing:.015em}
+.brand small{color:#b9e2ff;letter-spacing:.12em}
+header>a[href="./copa.html"]{
+  background:linear-gradient(135deg,#2d8bc9,#1769aa)!important;
+  color:#fff!important;border:1px solid rgba(255,255,255,.24);
+  box-shadow:0 5px 14px rgba(0,0,0,.18);
+  transition:transform .2s,filter .2s
+}
+header>a[href="./copa.html"]:hover{transform:translateY(-2px);filter:brightness(1.12)}
+header #loginToggle{background:#fff;color:#0b2d52;border:1px solid #d8e8f6}
+main{padding-top:34px}
+.hero{
+  min-height:220px;padding:46px;
+  background:radial-gradient(circle at 88% 18%,rgba(93,190,244,.3),transparent 28%),linear-gradient(118deg,#071b33 0%,#103e6b 62%,#1769aa 100%);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 18px 42px rgba(7,27,51,.18);
+}
+.hero:after{content:"";position:absolute;width:260px;height:260px;border:1px solid rgba(255,255,255,.12);border-radius:50%;right:-72px;bottom:-170px;box-shadow:0 0 0 28px rgba(255,255,255,.035),0 0 0 58px rgba(255,255,255,.025)}
+.hero small{color:#8bd3ff}
+.hero h1{max-width:760px;font-size:clamp(30px,4.2vw,46px);letter-spacing:-.04em}
+.hero p{font-size:16px;line-height:1.7;color:#e5f2ff}
+.tabs{position:relative;top:0;gap:6px;padding:9px;background:rgba(255,255,255,.92);border-color:#dbe6f0;box-shadow:0 8px 24px rgba(7,27,51,.07)}
+.tabs button{border-radius:10px}
+.tabs button.active{background:linear-gradient(135deg,#0b2d52,#1769aa);box-shadow:0 5px 12px rgba(11,45,82,.2)}
+button{background:linear-gradient(135deg,#1769aa,#2186c7);box-shadow:0 3px 9px rgba(23,105,170,.13)}
+button.alt{box-shadow:none;background:#f2f6fa}
+.panel{border-color:#dce6ef;box-shadow:var(--shadow);border-radius:18px}
+.grid>div{border-top:0;position:relative;overflow:hidden;padding:24px;background:linear-gradient(145deg,#fff,#f2f7fc)}
+.grid>div:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#55b7ed,#1769aa)}
+.big{color:#0b2d52;font-size:36px}
+.club-badge{transition:transform .2s,box-shadow .2s;border-color:#dce6ef}
+.club-badge:hover{transform:translateY(-4px);box-shadow:0 14px 28px rgba(7,27,51,.1)}
+.club-badge img{width:66px;height:66px}
+.match-card{border-color:#dce6ef;box-shadow:0 5px 16px rgba(7,27,51,.045);transition:transform .2s,box-shadow .2s}
+.match-card:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(7,27,51,.08)}
+.match-score{background:#edf4fb;border-color:#d7e6f3;color:#0b2d52}
+.scroll{border-color:#dce6ef}
+th{background:#edf4fb;color:#0b2d52}
+tbody tr:nth-child(even){background:#fbfdff}
+tbody tr:hover{background:#edf6fd}
+.status{background:#eaf5fd;color:#145b91;border-color:#c7e4f7}
+.section-kicker{color:#1769aa}
+input:focus,select:focus,textarea:focus{border-color:#3297d3;box-shadow:0 0 0 3px rgba(50,151,211,.14)}
+footer{background:#f0f5fa;color:#647a91}
+@media(max-width:768px){
+  header{position:relative;flex-wrap:wrap}
+  .brand strong{font-size:18px}
+  .hero{padding:27px;min-height:0}
+  .tabs{position:relative}
+}
+
 </style>
 </head>
 <body>
