@@ -27,6 +27,7 @@ function page(id){
 
 $('#tabs button').forEach(b=>b.onclick=()=>page(b.dataset.page));
 if(window.location.hash==='#documentos')page('documentos');
+window.addEventListener('hashchange',()=>{if(window.location.hash==='#documentos')page('documentos');});
 
 const name=(list,id)=>list.find(x=>String(x.id)===String(id))?.name||'—';
 
@@ -48,7 +49,7 @@ const crestFiles={
 function getCrestImg(clubName,eager=false){
   const file=crestFiles[norm(clubName)];
   if(!file)return '';
-  return `<img src="${ESCUDOS_BASE}${encodeURIComponent(file)}" alt="" loading="${eager?'eager':'lazy'}" style="display:inline-block;width:28px;height:28px;object-fit:contain;flex:none;" onerror="this.remove()">`;
+  return `<img src="${ESCUDOS_BASE}${encodeURIComponent(file)}" alt="Escudo ${esc(clubName)}" loading="${eager?'eager':'lazy'}" style="display:inline-block;width:32px;height:32px;object-fit:contain;flex:none;" onerror="this.remove()">`;
 }
 
 function clubLabel(id){
@@ -60,8 +61,9 @@ function clubLabel(id){
 function fairPlayClubLabel(card){
   const raw=card.club_id??card.club_name??card.club;
   const club=clubs.find(x=>String(x.id)===String(raw))||clubs.find(x=>norm(x.name)===norm(raw));
-  const clubName=club?.name||raw||'—';
-  return `<span class="club-cell">${getCrestImg(clubName,true)}<span>${esc(clubName)}</span></span>`;
+  const clubName=club?.name||card.club_name||card.club||raw||'—';
+  const crest=club?getCrestImg(club.name,true):getCrestImg(clubName,true);
+  return `<span class="club-cell">${crest}<span>${esc(clubName)}</span></span>`;
 }
 
 function options(sel,list){
@@ -235,28 +237,36 @@ $$('.filter').forEach(e=>e.onchange=()=>{
 async function load(){
   if(!db)return;
   try{
-    const tables=['clubs','categories','matches','scorers','announcements','cards','disciplinary_sanctions'];
-    const result=await Promise.all(tables.map(t=>db.from(t).select('*')));
-    const error=result.find(x=>x.error)?.error;
-    if(error)throw error;
+    const coreTables=['clubs','categories','matches','scorers','announcements'];
+    const coreResult=await Promise.all(coreTables.map(t=>db.from(t).select('*')));
+    const coreError=coreResult.find(x=>x.error)?.error;
+    if(coreError)throw coreError;
+    [clubs,categories,matches,scorers,announcements]=coreResult.map(x=>x.data||[]);
 
-    [clubs,categories,matches,scorers,announcements,cards,sanctions]=result.map(x=>x.data||[]);
+    const optionalResult=await Promise.all([
+      db.from('cards').select('*'),
+      db.from('disciplinary_sanctions').select('*')
+    ]);
+    cards=optionalResult[0].error?[]:(optionalResult[0].data||[]);
+    sanctions=optionalResult[1].error?[]:(optionalResult[1].data||[]);
 
     categories.sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
-    matches.sort((a,b)=>String(b.match_date||'').localeCompare(String(a.match_date||''))||b.id-a.id);
+    matches.sort((a,b)=>String(b.match_date||'').localeCompare(String(a.match_date||''))||Number(b.id)-Number(a.id));
     announcements.sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
 
     selected=categories.some(x=>String(x.id)===String(selected))?selected:categories[0]?.id;
-
     options('.categories',categories);
     options('.clubs',clubs);
     options('.filter',categories);
-    $$('.filter').forEach(x=>x.value=selected??'');
-
+    $('.filter').forEach(x=>x.value=selected??'');
     render();
-    status('Información actualizada correctamente.');
+
+    const optionalErrors=optionalResult.filter(x=>x.error).map(x=>x.error.message);
+    status(optionalErrors.length
+      ?'Liga cargada. Atención: no se pudieron cargar algunos datos complementarios: '+optionalErrors.join(' · ')
+      :'Información actualizada correctamente.',optionalErrors.length>0);
   }catch(e){
-    status('Error de lectura: '+e.message,true);
+    status('Error de lectura de la Liga: '+e.message,true);
   }
 }
 
