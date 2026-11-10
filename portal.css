@@ -77,3 +77,11 @@ textarea{min-height:105px;resize:vertical}
 footer{padding:27px 20px;border-top:1px solid var(--border);background:#edf3f8;color:var(--muted);font-size:12px;text-align:center}
 @media(max-width:800px){header{position:relative;flex-wrap:wrap;padding:12px 16px}.brand img{width:48px;height:48px}.tabs{position:relative;top:auto;flex-wrap:nowrap;overflow-x:auto}.tabs button{flex:0 0 auto}.hero{min-height:0;padding:28px}.panel{padding:19px}main{padding:20px 14px 40px}}
 @media(max-width:520px){.brand{gap:10px}.brand strong{font-size:16px}.brand small{font-size:9px}.match-main{gap:6px}.match-team{gap:5px;font-size:11px}.match-team img{width:27px;height:27px}.match-score{min-width:62px;padding:7px 8px;font-size:16px}.match-info{align-items:flex-start;flex-direction:column}.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.grid>div{padding:15px 10px}.big{font-size:27px}.club-strip{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Componentes de disciplina y documentos */
+.card-chip{display:inline-flex;align-items:center;gap:7px;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap}
+.card-chip:before{content:"";width:9px;height:9px;border-radius:50%;background:currentColor}
+.card-chip.yellow{background:#fff7d6;color:#8a5a00;border:1px solid #f2d77c}
+.card-chip.red{background:#fff0f0;color:#a51f2b;border:1px solid #f0b5b9}
+.download-link{display:inline-flex;align-items:center;justify-content:center;padding:9px 13px;border-radius:9px;background:#176eaa;color:#fff;text-decoration:none;font-size:12px;font-weight:800;white-space:nowrap}
+.download-link:hover{background:#0f578a}
