@@ -8,6 +8,7 @@ const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const db=ready?createClient(cfg.url,cfg.anonKey):null;
 
 let admin=false,selected=null,clubs=[],categories=[],matches=[],scorers=[],announcements=[],cards=[],sanctions=[];
+let recoveryMode=new URLSearchParams(window.location.hash.slice(1)).get('type')==='recovery';
 
 function status(s,error=false){
   const box=$('#status');
@@ -267,6 +268,42 @@ async function authState(){
 
 $('#loginToggle')?.addEventListener('click',()=>page(admin?'admin':'login'));
 
+function showPasswordRecovery(){
+  const loginForm=$('#loginForm');
+  if(!loginForm)return;
+  page('login');
+  loginForm.style.display='none';
+  let box=$('#passwordRecoveryForm');
+  if(!box){
+    loginForm.insertAdjacentHTML('afterend',`
+      <form id="passwordRecoveryForm" class="form" style="grid-template-columns:1fr;margin-top:16px">
+        <h3 style="margin:0">Crear nueva contraseña</h3>
+        <p style="margin:0;color:var(--muted);font-size:13px">Ingresá tu nueva contraseña y repetila para confirmar.</p>
+        <label>Nueva contraseña<input id="newPassword" type="password" minlength="6" required autocomplete="new-password"></label>
+        <label>Repetir contraseña<input id="confirmPassword" type="password" minlength="6" required autocomplete="new-password"></label>
+        <button type="submit">Guardar nueva contraseña</button>
+      </form>`);
+    box=$('#passwordRecoveryForm');
+    box.addEventListener('submit',async e=>{
+      e.preventDefault();
+      const password=$('#newPassword').value;
+      const confirmation=$('#confirmPassword').value;
+      if(password.length<6){status('La contraseña debe tener al menos 6 caracteres.',true);return;}
+      if(password!==confirmation){status('Las contraseñas no coinciden.',true);return;}
+      const {error}=await db.auth.updateUser({password});
+      if(error){status('No se pudo actualizar la contraseña: '+error.message,true);return;}
+      recoveryMode=false;
+      box.remove();
+      loginForm.style.display='';
+      await authState();
+      if(admin){page('admin');status('Contraseña actualizada. Ya podés ingresar con tu nueva clave.');}
+      else{page('login');status('Contraseña actualizada. Ingresá con tu nueva clave.');}
+    });
+  }
+  status('Enlace de recuperación reconocido. Creá tu nueva contraseña.');
+}
+
+
 $('#loginForm')?.addEventListener('submit',async e=>{
   e.preventDefault();
   if(!db)return;
@@ -418,8 +455,9 @@ $('#adminDocuments')?.addEventListener('click',async e=>{
 if(!ready){
   status('Falta configurar config.js con la URL y la clave pública de Supabase.',true);
 }else{
+  db.auth.onAuthStateChange((event)=>{setTimeout(async()=>{if(event==='PASSWORD_RECOVERY'){recoveryMode=true;showPasswordRecovery();}await authState();if(admin)await loadAdminDocuments();},0);});
   await authState();
   await load();
   await loadDocuments();
-  db.auth.onAuthStateChange(()=>{setTimeout(async()=>{await authState();if(admin)await loadAdminDocuments();},0);});
+  if(recoveryMode)showPasswordRecovery();
 }
