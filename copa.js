@@ -10,7 +10,7 @@ const crestFiles = {
   'Malvinas':'MALVINAS.png','Lirico':'LIRICO.png','Sakura':'SAKURA.png','Santa Ana':'SANTA ANA.png'
 };
 const clubs = ['Villa Coll','CDSV','Defensores de Glew','Malvinas','Lirico','Sakura','Santa Ana'];
-const categories = ['Sub-15 Femenino','Sub-17 Femenino','1ª Femenino','6ª División','5ª División','4ª División','3ª División','1ª División','Senior'];
+const categories = ['Sub-15 Femenino','Sub-17 Femenino','6ª División','5ª División','4ª División','3ª División','1ª División','Senior','1ª Femenino'];
 const copaCategories = categories.filter(c => c !== 'Sub-15 Femenino');
 const ties = [
   {id:'QF1',title:'Cuartos · Partido 1',home:'CDSV',away:'Santa Ana'},
@@ -26,7 +26,8 @@ function crest(club, size=34) {
   const file = crestFiles[club];
   return file ? '<img src="'+crestBase+encodeURIComponent(file)+'" alt="Escudo '+esc(club)+'" loading="eager" style="display:inline-block;width:34px;height:34px;object-fit:contain;flex:0 0 34px" onerror="this.style.display=\'none\'">' : '';
 }
-function team(club) { return club ? '<span class="copa-team">'+crest(club)+'<b>'+esc(club)+'</b></span>' : '<span class="copa-team copa-pending">Por definir</span>'; }
+function displayClub(club) { return club==='Villa Coll'?'Villa Cool':club; }
+function team(club) { return club ? '<span class="copa-team">'+crest(club)+'<b>'+esc(displayClub(club))+'</b></span>' : '<span class="copa-team copa-pending">Por definir</span>'; }
 function score(m) { return m && m.home_goals !== null && m.away_goals !== null ? m.home_goals+' - '+m.away_goals : 'vs'; }
 function matchFor(tie, cat) {
   const match=matches.find(m => m.tie_code===tie && m.category===cat);
@@ -108,7 +109,7 @@ function renderCardMatchOptions() {
   if([...select.options].some(o=>o.value===old))select.value=old;
 }
 function renderAdminMatches() {
-  $('#copaAdminMatches').innerHTML=ties.map(t=>'<div class="copa-admin-tie"><h4>'+esc(t.title)+' · '+esc(t.home||'Por definir')+' vs '+esc(t.away||'Por definir')+'</h4><div class="copa-admin-grid">'+copaCategories.map(cat=>{
+  $('#copaAdminMatches').innerHTML=ties.map(t=>'<div class="copa-admin-tie"><h4>'+esc(t.title)+' · '+esc(displayClub(t.home||'Por definir'))+' vs '+esc(displayClub(t.away||'Por definir'))+'</h4><div class="copa-admin-grid">'+copaCategories.map(cat=>{
     const m=matchFor(t.id,cat);
     return '<form class="copa-score-form" data-tie="'+t.id+'" data-category="'+esc(cat)+'"><label>'+esc(cat)+'</label><input name="match_date" type="date" value="'+(m?.match_date||'')+'" aria-label="Fecha del partido"><input name="home_goals" type="number" min="0" placeholder="Local" value="'+(m?.home_goals??'')+'" required><input name="away_goals" type="number" min="0" placeholder="Visita" value="'+(m?.away_goals??'')+'" required><button>Guardar</button></form>';
   }).join('')+'</div></div>').join('');
