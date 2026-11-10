@@ -85,16 +85,16 @@ function renderBracket() {
     '<div class="copa-round copa-final"><h3>Final</h3>'+tieCard(ties[5])+'</div>';
 }
 function renderAggregate() {
-  const totals=Object.fromEntries(clubs.map(c=>[c,{club:c,pts:0,gf:0,gc:0,fp:0,pj:0}]));
+  const totals=Object.fromEntries(clubs.map(c=>[c,{club:c,pts:0,gf:0,gc:0,fp:0,yellow:0,red:0,pj:0}]));
   matches.filter(m=>m.home_goals!==null&&m.away_goals!==null).forEach(m=>{
     const h=totals[m.home_club],a=totals[m.away_club]; if(!h||!a)return;
     h.pj++;a.pj++;h.gf+=m.home_goals;h.gc+=m.away_goals;a.gf+=m.away_goals;a.gc+=m.home_goals;
     if(m.home_goals>m.away_goals)h.pts+=3;else if(m.home_goals<m.away_goals)a.pts+=3;else{h.pts++;a.pts++;}
   });
-  cards.forEach(c=>{if(totals[c.club_name])totals[c.club_name].fp+=fairPlayPoints(c.card_type);});
+  cards.forEach(c=>{const row=totals[c.club_name];if(!row)return;const type=String(c.card_type||'').trim().toLowerCase();if(['roja','red','red card','red_card','expulsion'].includes(type)){row.red++;row.fp+=3;}else{row.yellow++;row.fp+=1;}});
   const rows=Object.values(totals).sort((a,b)=>b.pts-a.pts||b.gf-a.gf||(b.gf-b.gc)-(a.gf-a.gc)||a.fp-b.fp);
   $('#copaAggregate').innerHTML=rows.map((r,i)=>'<tr><td>'+ (i+1)+'</td><td><span class="copa-table-team">'+crest(r.club)+esc(r.club)+'</span></td><td>'+r.pts+'</td><td>'+r.pj+'</td><td>'+r.gf+'</td><td>'+r.gc+'</td><td>'+(r.gf-r.gc)+'</td></tr>').join('');
-  $('#copaFairplay').innerHTML=rows.slice().sort((a,b)=>a.fp-b.fp).map((r,i)=>'<tr><td>'+(i+1)+'</td><td><span class="copa-table-team">'+crest(r.club)+esc(r.club)+'</span></td><td>'+r.fp+'</td></tr>').join('');
+  $('#copaFairplay').innerHTML=rows.slice().sort((a,b)=>a.fp-b.fp||a.red-b.red||a.yellow-b.yellow).map((r,i)=>'<tr><td>'+(i+1)+'</td><td><span class="copa-table-team">'+crest(r.club)+esc(displayClub(r.club))+'</span></td><td><span class="copa-card-count yellow" title="Tarjetas amarillas">'+r.yellow+'</span></td><td><span class="copa-card-count red" title="Tarjetas rojas">'+r.red+'</span></td><td><b>'+r.fp+'</b></td></tr>').join('');
 }
 function renderScorers() {
   const cat=$('#copaScorerCategory').value;
