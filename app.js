@@ -52,7 +52,7 @@ function getCrestImg(clubName){
 function clubLabel(id){
   const n=name(clubs,id);
   const img=getCrestImg(n);
-  return `<span class="club-cell"><span>${esc(n)}</span>${img}</span>`;
+  return `<span class="club-cell">${img}<span>${esc(n)}</span></span>`;
 }
 
 function options(sel,list){
