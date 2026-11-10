@@ -228,7 +228,7 @@ function render(){
   renderFairPlay();
   renderSanctions();
 
-  if($('#adminMatches'))$('#adminMatches').innerHTML=matches.map(m=>`<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f8fafc; border:1px solid var(--border); border-radius:10px; margin-bottom:8px;"><span style="font-size:13px"><b>${esc(name(categories,m.category_id))}</b> · ${esc(name(clubs,m.home_id))} ${m.home_goals??'—'}-${m.away_goals??'—'} ${esc(name(clubs,m.away_id))}</span><button class="alt" type="button" style="padding:6px 12px; font-size:12px" data-delete="matches" data-id="${m.id}">Eliminar</button></div>`).join('')||'<p style="color:var(--muted); font-size:13px">No hay partidos cargados.</p>';
+  if($('#adminMatches'))$('#adminMatches').innerHTML=matches.map(m=>`<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f8fafc; border:1px solid var(--border); border-radius:10px; margin-bottom:8px;"><span style="font-size:13px"><b>${esc(name(categories,m.category_id))}</b> · ${esc(name(clubs,m.home_id))} ${m.home_goals??'—'}-${m.away_goals??'—'} ${esc(name(clubs,m.away_id))}</span><span style="display:flex;gap:6px"><button class="alt" type="button" style="padding:6px 10px;font-size:12px" data-edit-match="${m.id}">Editar</button><button class="alt" type="button" style="padding:6px 10px;font-size:12px" data-delete="matches" data-id="${m.id}">Eliminar</button></span></div>`).join('')||'<p style="color:var(--muted); font-size:13px">No hay partidos cargados.</p>';
 
   if($('#adminCards'))$('#adminCards').innerHTML=cards.map(c=>`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 12px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;margin-bottom:6px"><span style="font-size:12px">${esc(c.player_name)} · ${esc(c.card_type)} · ${esc(name(clubs,c.club_id))}</span><button class="alt" type="button" style="padding:4px 10px;font-size:11px" data-delete="cards" data-id="${c.id}">Eliminar</button></div>`).join('')||'<p style="color:var(--muted);font-size:12px">No hay tarjetas registradas.</p>';
 
@@ -384,9 +384,14 @@ $('#matchForm')?.addEventListener('submit',async e=>{
 
   if(payload.home_id === payload.away_id){status('El local y visitante deben ser distintos.',true);return;}
 
-  const {error}=await db.from('matches').insert(payload);
-  if(error){status('Error: '+error.message,true);return;}
-  e.target.reset(); load(); status('Resultado guardado correctamente.');
+  const matchId=rawData.match_id;
+  const result=matchId
+    ?await db.from('matches').update(payload).eq('id',Number(matchId))
+    :await db.from('matches').insert(payload);
+  if(result.error){status('Error: '+result.error.message,true);return;}
+  e.target.reset();
+  status(matchId?'Resultado actualizado correctamente.':'Resultado guardado correctamente.');
+  await load();
 });
 
 $('#scorerForm')?.addEventListener('submit',e=>{
@@ -445,6 +450,24 @@ $('#announcementForm')?.addEventListener('submit',e=>{
 });
 
 $('#admin')?.addEventListener('click',async e=>{
+  const edit=e.target.closest('[data-edit-match]');
+  if(edit&&admin){
+    const match=matches.find(m=>String(m.id)===String(edit.dataset.editMatch));
+    const form=$('#matchForm');
+    if(match&&form){
+      form.elements.match_id.value=match.id;
+      form.elements.category_id.value=String(match.category_id);
+      form.elements.round.value=match.round||'';
+      form.elements.match_date.value=match.match_date||'';
+      form.elements.home_id.value=String(match.home_id);
+      form.elements.away_id.value=String(match.away_id);
+      form.elements.home_goals.value=match.home_goals??'';
+      form.elements.away_goals.value=match.away_goals??'';
+      form.scrollIntoView({behavior:'smooth',block:'center'});
+      status('Editando el resultado seleccionado. Guardá para aplicar los cambios.');
+    }
+    return;
+  }
   const b=e.target.closest('[data-delete]');
   if(!b||!admin||!confirm('¿Eliminar este registro permanentemente?'))return;
   const {error}=await db.from(b.dataset.delete).delete().eq('id',Number(b.dataset.id));
@@ -485,6 +508,7 @@ $('#documentForm')?.addEventListener('submit',async e=>{
   const form=e.target;
   const file=form.elements.pdf.files[0];
   if(!file||file.type!=='application/pdf'){status('Seleccioná un archivo PDF válido.',true);return;}
+  if(file.size>20*1024*1024){status('El PDF supera el límite de 20 MB.',true);return;}
 
   const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
   const path=`${form.elements.doc_type.value}/${Date.now()}-${safeName}`;
