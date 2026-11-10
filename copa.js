@@ -98,7 +98,14 @@ function renderCategoryMatches() {
     return '<div class="copa-result-row"><b>'+esc(t.title)+'</b><span>'+team(t.home)+' <strong>'+score(m)+'</strong> '+team(t.away)+'</span></div>';
   }).join('');
 }
-function renderCardMatchOptions() {\n  const select = document.querySelector('#copaCardForm select[name=\"match_id\"]');\n  if(!select)return;\n  const old=select.value;\n  select.innerHTML='<option value=\"\">Seleccionar partido</option>'+matches.map(m=>'<option value=\"'+m.id+'\">'+esc(m.tie_code)+' · '+esc(m.category)+' · '+esc(m.home_club)+' vs '+esc(m.away_club)+'</option>').join('');\n  if([...select.options].some(o=>o.value===old))select.value=old;\n}\nfunction renderAdminMatches() {
+function renderCardMatchOptions() {
+  const select = document.querySelector('#copaCardForm select[name="match_id"]');
+  if(!select)return;
+  const old=select.value;
+  select.innerHTML='<option value="">Seleccionar partido</option>'+matches.map(m=>'<option value="'+m.id+'">'+esc(m.tie_code)+' · '+esc(m.category)+' · '+esc(m.home_club)+' vs '+esc(m.away_club)+'</option>').join('');
+  if([...select.options].some(o=>o.value===old))select.value=old;
+}
+function renderAdminMatches() {
   $('#copaAdminMatches').innerHTML=ties.map(t=>'<div class="copa-admin-tie"><h4>'+esc(t.title)+' · '+esc(t.home||'Por definir')+' vs '+esc(t.away||'Por definir')+'</h4><div class="copa-admin-grid">'+copaCategories.map(cat=>{
     const m=matchFor(t.id,cat);
     return '<form class="copa-score-form" data-tie="'+t.id+'" data-category="'+esc(cat)+'"><label>'+esc(cat)+'</label><input name="home_goals" type="number" min="0" placeholder="Local" value="'+(m?.home_goals??'')+'" required><input name="away_goals" type="number" min="0" placeholder="Visita" value="'+(m?.away_goals??'')+'" required><button>Guardar</button></form>';
