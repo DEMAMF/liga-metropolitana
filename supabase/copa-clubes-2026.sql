@@ -46,3 +46,8 @@ drop policy if exists "Copa public read cards" on public.copa_cards;
 create policy "Copa public read cards" on public.copa_cards for select using (true);
 drop policy if exists "Copa admin manage cards" on public.copa_cards;
 create policy "Copa admin manage cards" on public.copa_cards for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+-- Permisos SQL explícitos; RLS sigue limitando las escrituras a administradores.
+grant select on public.copa_matches, public.copa_scorers, public.copa_cards to anon, authenticated;
+grant insert, update, delete on public.copa_matches, public.copa_scorers, public.copa_cards to authenticated;
+grant usage, select on all sequences in schema public to authenticated;
