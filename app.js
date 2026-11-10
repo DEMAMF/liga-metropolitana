@@ -265,6 +265,12 @@ async function load(){
     options('.categories',categories);
     options('.clubs',clubs);
     options('.filter',categories);
+    const cardMatch=$('#cardMatch');
+    if(cardMatch){
+      const previous=cardMatch.value;
+      cardMatch.innerHTML='<option value="">Seleccionar partido</option>'+matches.map(m=>'<option value="'+m.id+'">'+esc(name(categories,m.category_id))+' · '+esc(name(clubs,m.home_id))+' vs '+esc(name(clubs,m.away_id))+'</option>').join('');
+      if([...cardMatch.options].some(o=>o.value===previous))cardMatch.value=previous;
+    }
     $$('.filter').forEach(x=>x.value=selected??'');
     render();
 
@@ -387,6 +393,41 @@ $('#scorerForm')?.addEventListener('submit',e=>{
     if(error){status('Error: '+error.message,true);return;}
     e.target.reset(); load(); status('Goleador registrado.');
   });
+});
+
+$('#cardForm')?.addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!admin){status('Sin permisos de administrador.',true);return;}
+  const fd=Object.fromEntries(new FormData(e.target));
+  const payload={
+    player_name:fd.player_name.trim(),
+    club_id:Number(fd.club_id),
+    category_id:Number(fd.category_id),
+    match_id:Number(fd.match_id),
+    card_type:fd.card_type
+  };
+  const {error}=await db.from('cards').insert(payload);
+  if(error){status('No se pudo registrar la tarjeta: '+error.message,true);return;}
+  e.target.reset();await load();status('Tarjeta registrada correctamente.');
+});
+
+$('#sanctionForm')?.addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!admin){status('Sin permisos de administrador.',true);return;}
+  const fd=Object.fromEntries(new FormData(e.target));
+  const imposed=Number(fd.dates_imposed),served=Number(fd.dates_served);
+  if(served>imposed){status('Las fechas cumplidas no pueden superar las impuestas.',true);return;}
+  const {error}=await db.from('disciplinary_sanctions').insert({
+    player_name:fd.player_name.trim(),
+    club_id:Number(fd.club_id),
+    category_id:Number(fd.category_id),
+    reason:fd.reason.trim(),
+    dates_imposed:imposed,
+    dates_served:served,
+    status:fd.status
+  });
+  if(error){status('No se pudo registrar la sanción: '+error.message,true);return;}
+  e.target.reset();await load();status('Sanción registrada correctamente.');
 });
 
 $('#announcementForm')?.addEventListener('submit',e=>{
