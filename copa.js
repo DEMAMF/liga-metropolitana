@@ -24,7 +24,7 @@ let admin = false, matches = [], scorers = [], cards = [], selectedCategory = 'S
 
 function crest(club, size=34) {
   const file = crestFiles[club];
-  return file ? '<img src="'+crestBase+encodeURIComponent(file)+'" alt="" loading="lazy" style="width:'+size+'px;height:'+size+'px;object-fit:contain" onerror="this.style.display=\'none\'">' : '';
+  return file ? '<img src="'+crestBase+encodeURIComponent(file)+'" alt="Escudo '+esc(club)+'" loading="eager" style="display:inline-block;width:34px;height:34px;object-fit:contain;flex:0 0 34px" onerror="this.style.display=\'none\'">' : '';
 }
 function team(club) { return club ? '<span class="copa-team">'+crest(club)+'<b>'+esc(club)+'</b></span>' : '<span class="copa-team copa-pending">Por definir</span>'; }
 function score(m) { return m && m.home_goals !== null && m.away_goals !== null ? m.home_goals+' - '+m.away_goals : 'vs'; }
@@ -83,13 +83,13 @@ function renderAggregate() {
   });
   cards.forEach(c=>{if(totals[c.club_name])totals[c.club_name].fp+=c.card_type==='Roja'?3:1;});
   const rows=Object.values(totals).sort((a,b)=>b.pts-a.pts||b.gf-a.gf||(b.gf-b.gc)-(a.gf-a.gc)||a.fp-b.fp);
-  $('#copaAggregate').innerHTML=rows.map((r,i)=>'<tr><td>'+ (i+1)+'</td><td><span class="copa-table-team">'+crest(r.club,28)+esc(r.club)+'</span></td><td>'+r.pts+'</td><td>'+r.pj+'</td><td>'+r.gf+'</td><td>'+r.gc+'</td><td>'+(r.gf-r.gc)+'</td></tr>').join('');
-  $('#copaFairplay').innerHTML=rows.slice().sort((a,b)=>a.fp-b.fp).map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+esc(r.club)+'</td><td>'+r.fp+'</td></tr>').join('');
+  $('#copaAggregate').innerHTML=rows.map((r,i)=>'<tr><td>'+ (i+1)+'</td><td><span class="copa-table-team">'+crest(r.club)+esc(r.club)+'</span></td><td>'+r.pts+'</td><td>'+r.pj+'</td><td>'+r.gf+'</td><td>'+r.gc+'</td><td>'+(r.gf-r.gc)+'</td></tr>').join('');
+  $('#copaFairplay').innerHTML=rows.slice().sort((a,b)=>a.fp-b.fp).map((r,i)=>'<tr><td>'+(i+1)+'</td><td><span class="copa-table-team">'+crest(r.club)+esc(r.club)+'</span></td><td>'+r.fp+'</td></tr>').join('');
 }
 function renderScorers() {
   const cat=$('#copaScorerCategory').value;
   const rows=scorers.filter(s=>s.category===cat).sort((a,b)=>b.goals-a.goals);
-  $('#copaScorers').innerHTML=rows.map(s=>'<tr><td>'+esc(s.player_name)+'</td><td><span class="copa-table-team">'+crest(s.club_name,26)+esc(s.club_name)+'</span></td><td>'+s.goals+'</td></tr>').join('')||'<tr><td colspan="3">Todavía no hay goleadores cargados.</td></tr>';
+  $('#copaScorers').innerHTML=rows.map(s=>'<tr><td>'+esc(s.player_name)+'</td><td><span class="copa-table-team">'+crest(s.club_name)+esc(s.club_name)+'</span></td><td>'+s.goals+'</td></tr>').join('')||'<tr><td colspan="3">Todavía no hay goleadores cargados.</td></tr>';
 }
 function renderCardMatchOptions() {
   const select = document.querySelector('#copaCardForm select[name="match_id"]');
