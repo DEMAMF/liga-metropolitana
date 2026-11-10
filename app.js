@@ -25,7 +25,8 @@ function page(id){
   if(id==='admin'&&admin)loadAdminDocuments();
 }
 
-$$('#tabs button').forEach(b=>b.onclick=()=>page(b.dataset.page));
+$('#tabs button').forEach(b=>b.onclick=()=>page(b.dataset.page));
+if(window.location.hash==='#documentos')page('documentos');
 
 const name=(list,id)=>list.find(x=>String(x.id)===String(id))?.name||'—';
 
