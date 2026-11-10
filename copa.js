@@ -98,7 +98,7 @@ function renderCategoryMatches() {
     return '<div class="copa-result-row"><b>'+esc(t.title)+'</b><span>'+team(t.home)+' <strong>'+score(m)+'</strong> '+team(t.away)+'</span></div>';
   }).join('');
 }
-function renderAdminMatches() {
+function renderCardMatchOptions() {\n  const select = document.querySelector('#copaCardForm select[name=\"match_id\"]');\n  if(!select)return;\n  const old=select.value;\n  select.innerHTML='<option value=\"\">Seleccionar partido</option>'+matches.map(m=>'<option value=\"'+m.id+'\">'+esc(m.tie_code)+' · '+esc(m.category)+' · '+esc(m.home_club)+' vs '+esc(m.away_club)+'</option>').join('');\n  if([...select.options].some(o=>o.value===old))select.value=old;\n}\nfunction renderAdminMatches() {
   $('#copaAdminMatches').innerHTML=ties.map(t=>'<div class="copa-admin-tie"><h4>'+esc(t.title)+' · '+esc(t.home||'Por definir')+' vs '+esc(t.away||'Por definir')+'</h4><div class="copa-admin-grid">'+copaCategories.map(cat=>{
     const m=matchFor(t.id,cat);
     return '<form class="copa-score-form" data-tie="'+t.id+'" data-category="'+esc(cat)+'"><label>'+esc(cat)+'</label><input name="home_goals" type="number" min="0" placeholder="Local" value="'+(m?.home_goals??'')+'" required><input name="away_goals" type="number" min="0" placeholder="Visita" value="'+(m?.away_goals??'')+'" required><button>Guardar</button></form>';
@@ -117,7 +117,7 @@ async function load() {
   matches.forEach(m=>{m.home_goals=m.home_goals===null?null:Number(m.home_goals);m.away_goals=m.away_goals===null?null:Number(m.away_goals);});
   $('#copaStatus').textContent='Datos de Copa actualizados desde Supabase.';
   renderBracket();renderAggregate();renderScorers();renderCategoryMatches();
-  if(admin)renderAdminMatches();
+  if(admin){renderAdminMatches();renderCardMatchOptions();}
 }
 async function checkAdmin() {
   if(!db)return;
@@ -153,7 +153,7 @@ $('#copaScorerForm').addEventListener('submit',async e=>{
 $('#copaCardForm').addEventListener('submit',async e=>{
   e.preventDefault();if(!admin)return;
   const f=e.target,fd=new FormData(f);
-  const {error}=await db.from('copa_cards').insert({player_name:String(fd.get('player_name')).trim(),club_name:fd.get('club_name'),category:fd.get('category'),card_type:fd.get('card_type')});
+  const {error}=await db.from('copa_cards').insert({player_name:String(fd.get('player_name')).trim(),club_name:fd.get('club_name'),category:fd.get('category'),card_type:fd.get('card_type'),match_id:fd.get('match_id')?Number(fd.get('match_id')):null});
   if(error){$('#copaStatus').textContent=error.message;return;}f.reset();await load();
 });
 $('#copaReset').addEventListener('click',async()=>{
