@@ -176,5 +176,5 @@ $('#copaLogin').addEventListener('click',async()=>{
   await checkAdmin();await load();
 });
 $('#copaLogout').addEventListener('click',async()=>{await db.auth.signOut();admin=false;$('#copaAdminPanel').hidden=true;});
-$('#copaDocumentList').innerHTML='<p>Los reglamentos, boletines y resoluciones se muestran desde la sección Documentación oficial de la Liga.</p><a href="./index.html#documentos" id="copaDocsLink">Ir a Documentación oficial</a>';
+$('#copaDocumentList').innerHTML='<p>Los reglamentos, boletines y resoluciones se muestran desde la sección Documentación oficial de la Liga.</p><a href="https://demamf.github.io/liga-metropolitana/index.html#documentos" id="copaDocsLink" target="_blank" rel="noopener">Abrir Documentación oficial</a>';
 if(db){await checkAdmin();await load();db.auth.onAuthStateChange(()=>setTimeout(async()=>{await checkAdmin();await load();},0));}
