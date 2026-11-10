@@ -57,6 +57,13 @@ function clubLabel(id){
   return `<span class="club-cell">${img}<span>${esc(n)}</span></span>`;
 }
 
+function fairPlayClubLabel(card){
+  const raw=card.club_id??card.club_name??card.club;
+  const club=clubs.find(x=>String(x.id)===String(raw))||clubs.find(x=>norm(x.name)===norm(raw));
+  const clubName=club?.name||raw||'—';
+  return `<span class="club-cell">${getCrestImg(clubName)}<span>${esc(clubName)}</span></span>`;
+}
+
 function options(sel,list){
   $$(sel).forEach(el=>{
     const old=el.value;
@@ -154,7 +161,7 @@ function renderFairPlay(){
     <thead><tr><th>Jugador/a</th><th>Club</th><th>Categoría</th><th>Tarjeta</th><th class="n">Puntos</th><th>Partido</th></tr></thead>
     <tbody>${rows.map(c=>`<tr>
       <td>${esc(c.player_name)}</td>
-      <td>${clubLabel(c.club_id)}</td>
+      <td>${fairPlayClubLabel(c)}</td>
       <td>${esc(name(categories,c.category_id))}</td>
       <td>${String(c.card_type).toLowerCase()==='roja'?'🔴 Roja':'🟨 Amarilla'}</td>
       <td class="n">${c.points}</td>
