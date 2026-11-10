@@ -108,7 +108,7 @@ function renderCardMatchOptions() {
 function renderAdminMatches() {
   $('#copaAdminMatches').innerHTML=ties.map(t=>'<div class="copa-admin-tie"><h4>'+esc(t.title)+' · '+esc(t.home||'Por definir')+' vs '+esc(t.away||'Por definir')+'</h4><div class="copa-admin-grid">'+copaCategories.map(cat=>{
     const m=matchFor(t.id,cat);
-    return '<form class="copa-score-form" data-tie="'+t.id+'" data-category="'+esc(cat)+'"><label>'+esc(cat)+'</label><input name="home_goals" type="number" min="0" placeholder="Local" value="'+(m?.home_goals??'')+'" required><input name="away_goals" type="number" min="0" placeholder="Visita" value="'+(m?.away_goals??'')+'" required><button>Guardar</button></form>';
+    return '<form class="copa-score-form" data-tie="'+t.id+'" data-category="'+esc(cat)+'"><label>'+esc(cat)+'</label><input name="match_date" type="date" value="'+(m?.match_date||'')+'" aria-label="Fecha del partido"><input name="home_goals" type="number" min="0" placeholder="Local" value="'+(m?.home_goals??'')+'" required><input name="away_goals" type="number" min="0" placeholder="Visita" value="'+(m?.away_goals??'')+'" required><button>Guardar</button></form>';
   }).join('')+'</div></div>').join('');
 }
 async function load() {
@@ -140,7 +140,7 @@ async function saveScore(form) {
   const t=form.dataset.tie,cat=form.dataset.category;
   const tie=ties.find(x=>x.id===t);resolveBracket();
   if(!tie?.home||!tie?.away){alert('Este cruce todavía no tiene los dos equipos definidos.');return;}
-  const payload={tie_code:t,category:cat,home_club:tie.home,away_club:tie.away,home_goals:Number(form.elements.home_goals.value),away_goals:Number(form.elements.away_goals.value)};
+  const payload={tie_code:t,category:cat,home_club:tie.home,away_club:tie.away,match_date:form.elements.match_date.value||null,home_goals:Number(form.elements.home_goals.value),away_goals:Number(form.elements.away_goals.value)};
   const existing=matchFor(t,cat);
   const result=existing?await db.from('copa_matches').update(payload).eq('id',existing.id):await db.from('copa_matches').insert(payload);
   if(result.error){$('#copaStatus').textContent='Error al guardar: '+result.error.message;return;}
