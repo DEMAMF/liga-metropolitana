@@ -28,7 +28,7 @@ $$('#tabs button').forEach(b=>b.onclick=()=>page(b.dataset.page));
 
 const name=(list,id)=>list.find(x=>String(x.id)===String(id))?.name||'—';
 
-const ESCUDOS_BASE='https://raw.githubusercontent.com/DEMAMF/liga-amf/main/escudos/';
+const ESCUDOS_BASE='https://raw.githubusercontent.com/DEMAMF/liga-metropolitana/main/escudos/';
 const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase().replace(/\s+/g,' ');
 
 const crestFiles={
