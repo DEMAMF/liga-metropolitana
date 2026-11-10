@@ -91,13 +91,6 @@ function renderScorers() {
   const rows=scorers.filter(s=>s.category===cat).sort((a,b)=>b.goals-a.goals);
   $('#copaScorers').innerHTML=rows.map(s=>'<tr><td>'+esc(s.player_name)+'</td><td><span class="copa-table-team">'+crest(s.club_name,26)+esc(s.club_name)+'</span></td><td>'+s.goals+'</td></tr>').join('')||'<tr><td colspan="3">Todavía no hay goleadores cargados.</td></tr>';
 }
-function renderCategoryMatches() {
-  const cat=$('#copaCategory').value;
-  $('#copaCategoryMatches').innerHTML=ties.map(t=>{
-    const m=matchFor(t.id,cat);
-    return '<div class="copa-result-row"><b>'+esc(t.title)+'</b><span>'+team(t.home)+' <strong>'+score(m)+'</strong> '+team(t.away)+'</span></div>';
-  }).join('');
-}
 function renderCardMatchOptions() {
   const select = document.querySelector('#copaCardForm select[name="match_id"]');
   if(!select)return;
@@ -123,7 +116,7 @@ async function load() {
   [matches,scorers,cards]=results.map(r=>r.data||[]);
   matches.forEach(m=>{m.home_goals=m.home_goals===null?null:Number(m.home_goals);m.away_goals=m.away_goals===null?null:Number(m.away_goals);});
   $('#copaStatus').textContent='Datos de Copa actualizados desde Supabase.';
-  renderBracket();renderAggregate();renderScorers();renderCategoryMatches();
+  renderBracket();renderAggregate();renderScorers();
   if(admin){renderAdminMatches();renderCardMatchOptions();}
 }
 async function checkAdmin() {
@@ -146,7 +139,6 @@ async function saveScore(form) {
   if(result.error){$('#copaStatus').textContent='Error al guardar: '+result.error.message;return;}
   await load();
 }
-$('#copaCategory').addEventListener('change',renderCategoryMatches);
 $('#copaScorerCategory').addEventListener('change',renderScorers);
 $('#copaAdminMatches').addEventListener('submit',async e=>{
   const f=e.target.closest('.copa-score-form');if(!f)return;e.preventDefault();if(admin)await saveScore(f);
