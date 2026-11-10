@@ -85,3 +85,5 @@ footer{padding:27px 20px;border-top:1px solid var(--border);background:#edf3f8;c
 .card-chip.red{background:#fff0f0;color:#a51f2b;border:1px solid #f0b5b9}
 .download-link{display:inline-flex;align-items:center;justify-content:center;padding:9px 13px;border-radius:9px;background:#176eaa;color:#fff;text-decoration:none;font-size:12px;font-weight:800;white-space:nowrap}
 .download-link:hover{background:#0f578a}
+
+.row{display:flex;align-items:center;gap:12px}
