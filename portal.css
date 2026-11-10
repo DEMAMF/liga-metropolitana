@@ -87,3 +87,52 @@ footer{padding:27px 20px;border-top:1px solid var(--border);background:#edf3f8;c
 .download-link:hover{background:#0f578a}
 
 .row{display:flex;align-items:center;gap:12px}
+
+
+/* REDISEÑO VISUAL 2 · portal editorial deportivo */
+:root{--navy:#082b4d;--navy-2:#104b78;--blue:#1683c4;--sky:#8bd5f5;--ink:#17344d;--muted:#688096;--surface:#fff;--surface-2:#edf6fc;--border:#d7e7f2;--shadow:0 14px 38px rgba(7,42,72,.075);--radius:22px}
+body{background:#edf4f9}
+header{position:relative;min-height:88px;padding:15px max(24px,calc((100vw - 1320px)/2));background:#fff;color:var(--navy);border-bottom:1px solid #d9e7f1;box-shadow:0 4px 20px rgba(8,43,77,.06)}
+.brand img{width:64px;height:64px;padding:3px;border:0;border-radius:0;background:transparent}
+.brand strong{font-size:21px;letter-spacing:.04em;color:#082b4d}
+.brand small{color:#1683c4;letter-spacing:.19em}
+header>a[href="./copa.html"]{margin-left:auto;margin-right:4px;padding:13px 19px;border:0;border-radius:9px;background:#e9f5fc!important;color:#07558b!important;box-shadow:none;font-size:12px;letter-spacing:.03em}
+header button.alt{padding:12px 17px;border:1px solid #cfe0ed;background:#fff;color:#244963}
+main{width:min(1320px,100%);padding:28px 24px 64px}
+.hero{min-height:300px;margin-bottom:24px;padding:52px 54px;border:0;border-radius:8px 30px 8px 30px;background:linear-gradient(105deg,#082b4d 0%,#0b4775 58%,#1683c4 100%);box-shadow:0 18px 42px rgba(8,43,77,.18)}
+.hero:before{content:"LIGA\A METROPOLITANA";white-space:pre;position:absolute;right:5%;top:50%;transform:translateY(-50%);font-size:clamp(42px,7vw,100px);line-height:.92;font-weight:950;letter-spacing:-.08em;text-align:right;color:rgba(255,255,255,.075);pointer-events:none}
+.hero:after{width:360px;height:360px;right:-100px;bottom:-245px;border:2px solid rgba(255,255,255,.18);box-shadow:0 0 0 34px rgba(255,255,255,.045),0 0 0 70px rgba(255,255,255,.03)}
+.hero small{color:#a9e3ff;letter-spacing:.22em}
+.hero h1{max-width:700px;font-size:clamp(36px,5vw,60px);line-height:1.02;letter-spacing:-.055em}
+.hero p{max-width:570px;color:#d8efff;font-size:16px}
+#status{border-radius:8px;padding:12px 16px;background:#fff;border-color:#d7e7f2;color:#276080}
+.tabs{position:relative;top:auto;display:flex;gap:4px;margin:0 0 26px;padding:7px;border:0;border-radius:12px;background:#082b4d;box-shadow:0 9px 24px rgba(8,43,77,.14)}
+.tabs button{flex:1;padding:12px 10px;border-radius:8px;color:#c4d8e8;font-size:11px;letter-spacing:.015em}
+.tabs button:hover{background:#16496f;color:#fff}
+.tabs button.active{background:#fff;color:#082b4d;box-shadow:none}
+.page{animation:portalIn .22s ease-out}
+@keyframes portalIn{from{opacity:.55;transform:translateY(5px)}to{opacity:1;transform:none}}
+.grid{gap:0;margin:0 0 25px;border-radius:16px;overflow:hidden;background:#082b4d;box-shadow:0 14px 30px rgba(8,43,77,.13)}
+.grid>div{min-height:112px;padding:22px 27px;border:0;border-right:1px solid rgba(255,255,255,.14);border-radius:0;background:transparent;box-shadow:none}
+.grid>div:before{display:none}
+.grid>div small{color:#a8c9df;font-size:10px;letter-spacing:.16em}
+.big{margin-top:9px;color:#fff;font-size:42px}
+.panel{margin-bottom:23px;padding:29px 30px;border:1px solid #dce9f2;border-radius:17px;background:#fff;box-shadow:0 7px 24px rgba(8,43,77,.045)}
+.panel h2{font-size:25px;letter-spacing:-.035em}
+.section-kicker{display:flex;align-items:center;gap:9px;color:#1683c4;letter-spacing:.19em}
+.section-kicker:before{content:"";display:inline-block;width:22px;height:3px;border-radius:4px;background:#43b5e9}
+.club-strip{grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
+.club-badge{min-height:145px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:17px 9px;border:1px solid #e0ebf3;border-radius:13px;background:linear-gradient(180deg,#fff,#f5f9fc);box-shadow:none}
+.club-badge img{width:82px;height:82px;margin-bottom:12px}
+.club-badge strong{font-size:11px;letter-spacing:.01em}
+.match-card{border-radius:11px;border-left:4px solid #1683c4;box-shadow:none}
+.match-score{border:0;border-radius:8px;background:#e8f4fb;color:#07558b}
+.scroll{border-radius:12px}
+th{background:#082b4d;color:#eaf6ff}
+td,th{padding:14px 15px}
+tbody tr:nth-child(even){background:#f3f8fc}
+tbody tr:hover{background:#e8f4fb}
+footer{background:#082b4d;color:#c2d8e8;border:0;padding:32px 20px;letter-spacing:.04em}
+@media(max-width:1000px){.club-strip{grid-template-columns:repeat(4,minmax(0,1fr))}.tabs{flex-wrap:wrap}.tabs button{flex:1 0 20%}}
+@media(max-width:700px){header{gap:10px;padding:12px 15px}.brand img{width:48px;height:48px}header>a[href="./copa.html"]{margin-left:0;padding:10px 12px}.hero{padding:31px 25px;min-height:260px}.hero:before{font-size:48px;right:5%;top:80%}.hero h1{font-size:36px}.tabs{display:flex;flex-wrap:nowrap;overflow-x:auto}.tabs button{flex:0 0 auto}.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.grid>div{min-height:90px;padding:16px 12px}.big{font-size:32px}.panel{padding:21px 17px}.club-strip{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:390px){header{align-items:flex-start;flex-direction:column}header>a[href="./copa.html"]{margin:0}.grid>div small{font-size:8px}.big{font-size:27px}}
