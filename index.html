@@ -181,6 +181,32 @@
   </div>
 
   <div class="panel">
+    <h3>Registrar tarjeta disciplinaria</h3>
+    <form id="cardForm" class="form">
+      <label>Jugador/a<input name="player_name" required maxlength="120"></label>
+      <label>Club<select name="club_id" class="clubs" required></select></label>
+      <label>Categoría<select name="category_id" class="categories" required></select></label>
+      <label>Partido<select name="match_id" id="cardMatch" required></select></label>
+      <label>Tarjeta<select name="card_type" required><option value="Amarilla">Amarilla</option><option value="Roja">Roja</option></select></label>
+      <div class="wide"><button type="submit">Registrar tarjeta</button></div>
+    </form>
+  </div>
+
+  <div class="panel">
+    <h3>Registrar sanción del Tribunal</h3>
+    <form id="sanctionForm" class="form">
+      <label>Jugador/a<input name="player_name" required maxlength="120"></label>
+      <label>Club<select name="club_id" class="clubs" required></select></label>
+      <label>Categoría<select name="category_id" class="categories" required></select></label>
+      <label>Motivo<input name="reason" required maxlength="250"></label>
+      <label>Fechas impuestas<input name="dates_imposed" type="number" min="1" required></label>
+      <label>Fechas cumplidas<input name="dates_served" type="number" min="0" value="0" required></label>
+      <label>Estado<select name="status"><option value="Pendiente">Pendiente</option><option value="En cumplimiento">En cumplimiento</option><option value="Cumplida">Cumplida</option></select></label>
+      <div class="wide"><button type="submit">Registrar sanción</button></div>
+    </form>
+  </div>
+
+  <div class="panel">
     <h3>Publicar comunicado institucional</h3>
     <form id="announcementForm" class="form" style="grid-template-columns:1fr">
       <label>Título<input name="title" required></label>
@@ -206,6 +232,6 @@
 
 </main>
 <footer>Liga Metropolitana · Portal Oficial · Temporada 2026</footer>
-<script src="config.js"></script><script type="module" src="app.js?v=20261110-2"></script>
+<script src="config.js"></script><script type="module" src="app.js?v=20261110-3"></script>
 </body>
 </html>
