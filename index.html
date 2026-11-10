@@ -150,8 +150,9 @@ footer{text-align:center;color:var(--muted);padding:30px 20px;border-top:1px sol
 .club-badge strong{font-size:12px;color:var(--navy);display:block}
 
 .section-kicker{color:var(--blue);font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px}
-.club-cell{display:inline-flex;align-items:center;gap:10px}
-.club-cell img{width:28px;height:28px;object-fit:contain;flex:none}
+.club-cell{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:10px;white-space:nowrap}
+.club-cell img{order:0!important;width:28px;height:28px;object-fit:contain;flex:0 0 28px}
+.club-cell>span{order:1!important}
 
 @media(max-width:768px){
   header{padding:14px 16px}
