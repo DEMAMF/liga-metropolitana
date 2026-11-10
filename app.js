@@ -25,7 +25,7 @@ function page(id){
   if(id==='admin'&&admin)loadAdminDocuments();
 }
 
-$('#tabs button').forEach(b=>b.onclick=()=>page(b.dataset.page));
+$$('#tabs button').forEach(b=>b.onclick=()=>page(b.dataset.page));
 if(window.location.hash==='#documentos')page('documentos');
 window.addEventListener('hashchange',()=>{if(window.location.hash==='#documentos')page('documentos');});
 
@@ -258,7 +258,7 @@ async function load(){
     options('.categories',categories);
     options('.clubs',clubs);
     options('.filter',categories);
-    $('.filter').forEach(x=>x.value=selected??'');
+    $$('.filter').forEach(x=>x.value=selected??'');
     render();
 
     const optionalErrors=optionalResult.filter(x=>x.error).map(x=>x.error.message);
