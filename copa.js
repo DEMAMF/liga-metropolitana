@@ -5,18 +5,18 @@ const db = cfg?.url && cfg?.anonKey ? createClient(cfg.url, cfg.anonKey) : null;
 const $ = s => document.querySelector(s);
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const crestBase = 'https://raw.githubusercontent.com/DEMAMF/liga-metropolitana/main/escudos/';
-const crestFiles = {
-  'Villa Coll':'VILLA COLL.png','CDSV':'CDSV.png','Defensores de Glew':'DEFENSORES DE GLEW.png',
-  'Malvinas':'MALVINAS.png','Lirico':'LIRICO.png','Sakura':'SAKURA.png','Santa Ana':'SANTA ANA.png'
+const canonicalClub = c => c === 'Villa Coll' ? 'Villa Cool' : c === 'Lirico' ? 'Lírico' : c;\nconst crestFiles = {
+  'Villa Cool':'VILLA COLL.png','Villa Coll':'VILLA COLL.png','CDSV':'CDSV.png','Defensores de Glew':'DEFENSORES DE GLEW.png',
+  'Malvinas':'MALVINAS.png','Lírico':'LIRICO.png','Lirico':'LIRICO.png','Sakura':'SAKURA.png','Santa Ana':'SANTA ANA.png'
 };
-const clubs = ['Villa Coll','CDSV','Defensores de Glew','Malvinas','Lirico','Sakura','Santa Ana'];
+const clubs = ['Villa Cool','CDSV','Defensores de Glew','Malvinas','Lirico','Sakura','Santa Ana'];
 const categories = ['Sub-15 Femenino','Sub-17 Femenino','1ª Femenino','6ª División','5ª División','4ª División','3ª División','1ª División','Senior'];
 const copaCategories = categories.filter(c => c !== 'Sub-15 Femenino');
 const ties = [
   {id:'QF1',title:'Cuartos · Partido 1',home:'CDSV',away:'Santa Ana'},
   {id:'QF2',title:'Cuartos · Partido 2',home:'Defensores de Glew',away:'Sakura'},
   {id:'QF3',title:'Cuartos · Partido 3',home:'Malvinas',away:'Lirico'},
-  {id:'SF1',title:'Semifinal 1',home:'Villa Coll',away:null},
+  {id:'SF1',title:'Semifinal 1',home:'Villa Cool',away:null},
   {id:'SF2',title:'Semifinal 2',home:null,away:null},
   {id:'FINAL',title:'Final',home:null,away:null}
 ];
@@ -26,7 +26,7 @@ function crest(club, size=34) {
   const file = crestFiles[club];
   return file ? '<img src="'+crestBase+encodeURIComponent(file)+'" alt="Escudo '+esc(club)+'" loading="eager" style="display:inline-block;width:34px;height:34px;object-fit:contain;flex:0 0 34px" onerror="this.style.display=\'none\'">' : '';
 }
-function team(club) { return club ? '<span class="copa-team">'+crest(club)+'<b>'+esc(club)+'</b></span>' : '<span class="copa-team copa-pending">Por definir</span>'; }
+function team(club) { club = canonicalClub(club); return club ? '<span class="copa-team">'+crest(club)+'<b>'+esc(club)+'</b></span>' : '<span class="copa-team copa-pending">Por definir</span>'; }
 function score(m) { return m && m.home_goals !== null && m.away_goals !== null ? m.home_goals+' - '+m.away_goals : 'vs'; }
 function matchFor(tie, cat) { return matches.find(m => m.tie_code===tie && m.category===cat); }
 
@@ -113,7 +113,7 @@ async function load() {
   ]);
   const err=results.find(r=>r.error)?.error;
   if(err){$('#copaStatus').textContent='No se pudieron cargar los datos de Copa. Ejecutá primero el SQL de configuración en Supabase. Detalle: '+err.message;return;}
-  [matches,scorers,cards]=results.map(r=>r.data||[]);
+  [matches,scorers,cards]=results.map(r=>r.data||[]);\n  matches.forEach(m=>{m.home_club=canonicalClub(m.home_club);m.away_club=canonicalClub(m.away_club);});\n  scorers.forEach(s=>s.club_name=canonicalClub(s.club_name));\n  cards.forEach(c=>c.club_name=canonicalClub(c.club_name));
   matches.forEach(m=>{m.home_goals=m.home_goals===null?null:Number(m.home_goals);m.away_goals=m.away_goals===null?null:Number(m.away_goals);});
   $('#copaStatus').textContent='Datos de Copa actualizados desde Supabase.';
   renderBracket();renderAggregate();renderScorers();
