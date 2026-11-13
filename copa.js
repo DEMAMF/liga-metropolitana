@@ -64,8 +64,10 @@ function resolveBracket() {
 function tieCard(t) {
   const stats=tieStats(t.id);
   const home=t.home, away=t.away;
+  const jornadaRef=matches.find(m=>m.tie_code===t.id&&(m.referee_a||m.referee_b));
+  const refs=jornadaRef?'<div class="copa-jornada-referees">'+(jornadaRef.referee_a?'<span>ÁRBITRO A: '+esc(jornadaRef.referee_a)+'</span>':'')+(jornadaRef.referee_b?'<span>ÁRBITRO B: '+esc(jornadaRef.referee_b)+'</span>':'')+'</div>':'';
   return '<article class="copa-tie"><div class="copa-tie-head">'+esc(t.title)+'</div>'+
-    '<div class="copa-tie-teams">'+team(home)+'<strong class="copa-versus">VS</strong>'+team(away)+'</div>'+
+    '<div class="copa-tie-teams">'+team(home)+'<strong class="copa-versus">VS</strong>'+team(away)+'</div>'+refs+
     '<div class="copa-tie-meta">'+(stats ? (stats.winner ? 'Clasificado: <b>'+esc(stats.winner)+'</b>' : stats.tied ? 'Empate total: pendiente de resolución' : stats.rows.length+'/8 categorías cargadas') : 'La llave se define con las 8 categorías')+'</div>'+
     '<div class="copa-mini-results">'+copaCategories.map(cat=>{const m=matchFor(t.id,cat);return '<span>'+esc(cat.replace(' División','').replace(' Femenino',' F.'))+': <b>'+score(m)+'</b>'+(m?.referee?'<small class="copa-referee">⚖️ Árbitro: '+esc(m.referee)+'</small>':'')+'</span>';}).join('')+'</div></article>';
 }
@@ -100,10 +102,18 @@ function renderCardMatchOptions() {
   if([...select.options].some(o=>o.value===old))select.value=old;
 }
 function renderAdminMatches() {
-  $('#copaAdminMatches').innerHTML=ties.map(t=>'<div class="copa-admin-tie"><h4>'+esc(t.title)+' · '+esc(t.home||'Por definir')+' vs '+esc(t.away||'Por definir')+'</h4><div class="copa-admin-grid">'+copaCategories.map(cat=>{
-    const m=matchFor(t.id,cat);
-    return '<form class="copa-score-form" data-tie="'+t.id+'" data-category="'+esc(cat)+'"><label>'+esc(cat)+'</label><input name="match_date" type="date" value="'+(m?.match_date||'')+'" aria-label="Fecha del partido"><input name="home_goals" type="number" min="0" placeholder="Local" value="'+(m?.home_goals??'')+'"><input name="away_goals" type="number" min="0" placeholder="Visita" value="'+(m?.away_goals??'')+'"><input name="referee" type="text" maxlength="120" placeholder="Árbitro" aria-label="Árbitro" value="'+esc(m?.referee||'')+'"><button>Guardar</button></form>';
-  }).join('')+'</div></div>').join('');
+  $('#copaAdminMatches').innerHTML=ties.map(t=>{
+    const jornada=matches.find(m=>m.tie_code===t.id&&(m.referee_a||m.referee_b));
+    return '<div class="copa-admin-tie"><h4>'+esc(t.title)+' · '+esc(t.home||'Por definir')+' vs '+esc(t.away||'Por definir')+'</h4>'+
+    '<form class="copa-referee-form" data-tie="'+t.id+'" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr)) auto;gap:8px;align-items:end;margin:10px 0 14px;padding:12px;background:#173653;border:1px solid var(--line);border-radius:10px">'+
+    '<label>Árbitro A · Apellido y nombre<input name="referee_a" type="text" maxlength="120" placeholder="Apellido y nombre" value="'+esc(jornada?.referee_a||'')+'"></label>'+
+    '<label>Árbitro B · Apellido y nombre<input name="referee_b" type="text" maxlength="120" placeholder="Apellido y nombre" value="'+esc(jornada?.referee_b||'')+'"></label>'+
+    '<button>Guardar árbitros de la jornada</button></form>'+
+    '<div class="copa-admin-grid">'+copaCategories.map(cat=>{
+      const m=matchFor(t.id,cat);
+      return '<form class="copa-score-form" data-tie="'+t.id+'" data-category="'+esc(cat)+'"><label>'+esc(cat)+'</label><input name="match_date" type="date" value="'+(m?.match_date||'')+'" aria-label="Fecha del partido"><input name="home_goals" type="number" min="0" placeholder="Local" value="'+(m?.home_goals??'')+'"><input name="away_goals" type="number" min="0" placeholder="Visita" value="'+(m?.away_goals??'')+'"><button>Guardar</button></form>';
+    }).join('')+'</div></div>';
+  }).join('');
 }
 async function load() {
   // Mostrar siempre el fixture base, incluso si Supabase tarda o devuelve un error.
@@ -135,6 +145,23 @@ async function checkAdmin() {
   $('#copaLoginInfo').textContent=admin?'Administrador habilitado.':'Ingresá con tu cuenta administradora desde el acceso de la Liga.';
   if(admin){renderAdminMatches();renderCardMatchOptions();}
 }
+async function saveJornadaReferees(form) {
+  const tieId=form.dataset.tie;
+  const tie=ties.find(t=>t.id===tieId);
+  if(!tie?.home||!tie?.away){alert('Este cruce todavía no tiene los dos equipos definidos.');return;}
+  const referee_a=form.elements.referee_a.value.trim();
+  const referee_b=form.elements.referee_b.value.trim();
+  if(!referee_a||!referee_b){alert('Completá el apellido y nombre de los dos árbitros.');return;}
+  for(const category of copaCategories){
+    const existing=matchFor(tieId,category);
+    const payload={tie_code:tieId,category,home_club:tie.home,away_club:tie.away,match_date:existing?.match_date||null,home_goals:existing?.home_goals??null,away_goals:existing?.away_goals??null,referee_a,referee_b};
+    const result=existing
+      ? await db.from('copa_matches').update({referee_a,referee_b}).eq('id',existing.id)
+      : await db.from('copa_matches').insert(payload);
+    if(result.error){$('#copaStatus').textContent='Error al guardar árbitros: '+result.error.message;return;}
+  }
+  await load();
+}
 async function saveScore(form) {
   const t=form.dataset.tie,cat=form.dataset.category;
   const tie=ties.find(x=>x.id===t);resolveBracket();
@@ -151,6 +178,8 @@ async function saveScore(form) {
 }
 $('#copaScorerCategory').addEventListener('change',renderScorers);
 $('#copaAdminMatches').addEventListener('submit',async e=>{
+  const refereeForm=e.target.closest('.copa-referee-form');
+  if(refereeForm){e.preventDefault();if(admin)await saveJornadaReferees(refereeForm);return;}
   const f=e.target.closest('.copa-score-form');if(!f)return;e.preventDefault();if(admin)await saveScore(f);
 });
 $('#copaScorerForm').addEventListener('submit',async e=>{
