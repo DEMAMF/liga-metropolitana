@@ -132,6 +132,8 @@ td.n,th.n{text-align:center}
   text-align:center;
 }
 .match-info{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);border-top:1px dashed var(--border);padding-top:8px;margin-top:2px}
+.match-referee{font-size:13px;color:#1769aa;font-weight:600;padding:3px 2px}
+@media(max-width:600px){#adminMatches>div{grid-template-columns:1fr!important}}
 
 .form{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
 label{display:grid;gap:6px;font-size:13px;font-weight:600;color:var(--navy)}
@@ -385,9 +387,10 @@ footer{background:#f0f5fa;color:#647a91}
       <label>Día del partido<input name="match_date" type="date" required></label>
       <label>Local<select name="home_id" class="clubs" required></select></label>
       <label>Visitante<select name="away_id" class="clubs" required></select></label>
-      <label>Goles local<input name="home_goals" type="number" min="0" required></label>
-      <label>Goles visitante<input name="away_goals" type="number" min="0" required></label>
-      <div class="wide" style="margin-top:8px"><button type="submit">Guardar resultado</button></div>
+      <label>Goles local<input name="home_goals" type="number" min="0" placeholder="Dejar vacío si aún no se jugó"></label>
+      <label>Goles visitante<input name="away_goals" type="number" min="0" placeholder="Dejar vacío si aún no se jugó"></label>
+      <label>Árbitro designado<input name="referee" type="text" maxlength="120" placeholder="Nombre y apellido"></label>
+      <div class="wide" style="margin-top:8px"><button type="submit">Guardar partido / designación</button></div>
     </form>
 
     <div style="margin-top:30px">
