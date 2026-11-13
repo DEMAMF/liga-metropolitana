@@ -1,7 +1,7 @@
 {
   "id": "./copa.html",
   "name": "Departamento de Futsal",
-  "short_name": "Futsal",
+  "short_name": "Depto. Futsal",
   "description": "Acceso directo a la Copa de Clubes 2026.",
   "start_url": "./copa.html?origen=app",
   "scope": "./",
