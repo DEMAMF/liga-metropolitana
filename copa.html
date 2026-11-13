@@ -2,6 +2,13 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07182b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Futsal">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./app-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./app-icon.svg">
 <title>Copa de Clubes 2026 | Liga Metropolitana</title>
 <style>
 :root{color-scheme:dark;--bg:#07182b;--panel:#102943;--panel2:#173653;--line:#294b68;--green:#3b82f6;--mint:#bfdbfe;--muted:#9fb4c7;--white:#f5f8ff;--red:#fb7185;font-family:Inter,system-ui,sans-serif}
@@ -41,6 +48,55 @@ main{max-width:1240px;margin:auto;padding:28px 20px 60px}.hero{border:1px solid 
 </section>
 </main><footer>Liga Metropolitana · Copa de Clubes 2026 · Portal oficial</footer>
 <script src="config.js"></script><script type="module" src="copa.js?v=20261113-2"></script>
+<script>
+(() => {
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js").catch(error => {
+        console.error("No se pudo registrar la app:", error);
+      });
+    });
+  }
+
+  const headerActions = document.querySelector("header > div:last-child");
+  if (!headerActions) return;
+
+  const installButton = document.createElement("button");
+  installButton.id = "installFutsalApp";
+  installButton.className = "secondary";
+  installButton.textContent = "Instalar app";
+  installButton.hidden = true;
+  headerActions.appendChild(installButton);
+
+  let installPrompt = null;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+
+  if (!isStandalone && isIOS) installButton.hidden = false;
+
+  window.addEventListener("beforeinstallprompt", event => {
+    event.preventDefault();
+    installPrompt = event;
+    installButton.hidden = false;
+  });
+
+  installButton.addEventListener("click", async () => {
+    if (installPrompt) {
+      installPrompt.prompt();
+      await installPrompt.userChoice;
+      installPrompt = null;
+      installButton.hidden = true;
+    } else if (isIOS) {
+      alert('Para instalar Departamento de Futsal en tu iPhone: tocá el botón Compartir de Safari y elegí “Agregar a pantalla de inicio”.');
+    }
+  });
+
+  window.addEventListener("appinstalled", () => {
+    installButton.hidden = true;
+    installPrompt = null;
+  });
+})();
+</script>
 <script>
 const cats=['Sub-17 Femenino','1ª Femenino','6ª División','5ª División','4ª División','3ª División','1ª División','Senior'];
 document.querySelectorAll('#copaCategory,#copaScorerCategory').forEach(s=>s.innerHTML=cats.map(c=>'<option>'+c+'</option>').join(''));
