@@ -94,6 +94,7 @@ function matchView(m){
         <span><b>${esc(name(categories,m.category_id))}</b> · ${esc(m.round)}</span>
         <span>${esc(m.match_date||'Fecha pendiente')}</span>
       </div>
+      ${m.referee?'<div class="match-referee">⚖️ Árbitro: <b>'+esc(m.referee)+'</b></div>':''}
     </div>
   `;
 }
@@ -221,7 +222,7 @@ function render(){
   renderFairPlay();
   renderSanctions();
 
-  if($('#adminMatches'))$('#adminMatches').innerHTML=matches.map(m=>`<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f8fafc; border:1px solid var(--border); border-radius:10px; margin-bottom:8px;"><span style="font-size:13px"><b>${esc(name(categories,m.category_id))}</b> · ${esc(name(clubs,m.home_id))} ${m.home_goals??'—'}-${m.away_goals??'—'} ${esc(name(clubs,m.away_id))}</span><button class="alt" type="button" style="padding:6px 12px; font-size:12px" data-delete="matches" data-id="${m.id}">Eliminar</button></div>`).join('')||'<p style="color:var(--muted); font-size:13px">No hay partidos cargados.</p>';
+  if($('#adminMatches'))$('#adminMatches').innerHTML=matches.map(m=>`<div style="display:grid;grid-template-columns:minmax(180px,1fr) minmax(180px,260px) auto auto;gap:8px;align-items:center;padding:10px 14px;background:#f8fafc;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;"><span style="font-size:13px"><b>${esc(name(categories,m.category_id))}</b> · ${esc(name(clubs,m.home_id))} ${m.home_goals??'—'}-${m.away_goals??'—'} ${esc(name(clubs,m.away_id))}</span><input type="text" maxlength="120" placeholder="Nombre del árbitro" aria-label="Árbitro" data-referee-input="${m.id}" value="${esc(m.referee||'')}" style="padding:8px"><button class="alt" type="button" style="padding:6px 12px;font-size:12px" data-save-referee="${m.id}">Guardar árbitro</button><button class="alt" type="button" style="padding:6px 12px;font-size:12px" data-delete="matches" data-id="${m.id}">Eliminar</button></div>`).join('')||'<p style="color:var(--muted); font-size:13px">No hay partidos cargados.</p>';
 
   if($('#adminScorers'))$('#adminScorers').innerHTML=scorers.map(s=>`<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#f8fafc; border:1px solid var(--border); border-radius:8px; margin-bottom:6px;"><span style="font-size:13px">${esc(s.player)} (${esc(name(clubs,s.club_id))}) - ${s.goals} goles</span><button class="alt" type="button" style="padding:4px 10px; font-size:11px" data-delete="scorers" data-id="${s.id}">Eliminar</button></div>`).join('')||'';
 
@@ -361,11 +362,14 @@ $('#matchForm')?.addEventListener('submit',async e=>{
     match_date: rawData.match_date,
     home_id: Number(rawData.home_id),
     away_id: Number(rawData.away_id),
-    home_goals: Number(rawData.home_goals),
-    away_goals: Number(rawData.away_goals)
+    home_goals: rawData.home_goals===''?null:Number(rawData.home_goals),
+    away_goals: rawData.away_goals===''?null:Number(rawData.away_goals),
+    referee: rawData.referee.trim()
   };
 
   if(payload.home_id === payload.away_id){status('El local y visitante deben ser distintos.',true);return;}
+  if((payload.home_goals===null)!==(payload.away_goals===null)){status('Completá los dos goles o dejá ambos vacíos para cargar solamente la designación arbitral.',true);return;}
+  if(payload.home_goals===null&&!payload.referee){status('Ingresá el árbitro o completá el resultado del partido.',true);return;}
 
   const {error}=await db.from('matches').insert(payload);
   if(error){status('Error: '+error.message,true);return;}
@@ -393,6 +397,14 @@ $('#announcementForm')?.addEventListener('submit',e=>{
 });
 
 $('#admin')?.addEventListener('click',async e=>{
+  const save=e.target.closest('[data-save-referee]');
+  if(save&&admin){
+    const id=Number(save.dataset.saveReferee);
+    const input=$('#adminMatches [data-referee-input="'+id+'"]');
+    const {error}=await db.from('matches').update({referee:input.value.trim()||null}).eq('id',id);
+    if(error){status('No se pudo guardar el árbitro: '+error.message,true);return;}
+    await load();status('Designación arbitral actualizada y publicada.');return;
+  }
   const b=e.target.closest('[data-delete]');
   if(!b||!admin||!confirm('¿Eliminar este registro permanentemente?'))return;
   const {error}=await db.from(b.dataset.delete).delete().eq('id',Number(b.dataset.id));
