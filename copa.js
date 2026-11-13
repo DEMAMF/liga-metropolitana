@@ -5,7 +5,8 @@ const db = cfg?.url && cfg?.anonKey ? createClient(cfg.url, cfg.anonKey) : null;
 const $ = s => document.querySelector(s);
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const crestBase = 'https://raw.githubusercontent.com/DEMAMF/liga-metropolitana/main/escudos/';
-const canonicalClub = c => c === 'Villa Coll' ? 'Villa Cool' : c === 'Lirico' ? 'Lírico' : c;\nconst crestFiles = {
+const canonicalClub = c => c === 'Villa Coll' ? 'Villa Cool' : c === 'Lirico' ? 'Lírico' : c;
+const crestFiles = {
   'Villa Cool':'VILLA COLL.png','Villa Coll':'VILLA COLL.png','CDSV':'CDSV.png','Defensores de Glew':'DEFENSORES DE GLEW.png',
   'Malvinas':'MALVINAS.png','Lírico':'LIRICO.png','Lirico':'LIRICO.png','Sakura':'SAKURA.png','Santa Ana':'SANTA ANA.png'
 };
@@ -113,7 +114,10 @@ async function load() {
   ]);
   const err=results.find(r=>r.error)?.error;
   if(err){$('#copaStatus').textContent='No se pudieron cargar los datos de Copa. Ejecutá primero el SQL de configuración en Supabase. Detalle: '+err.message;return;}
-  [matches,scorers,cards]=results.map(r=>r.data||[]);\n  matches.forEach(m=>{m.home_club=canonicalClub(m.home_club);m.away_club=canonicalClub(m.away_club);});\n  scorers.forEach(s=>s.club_name=canonicalClub(s.club_name));\n  cards.forEach(c=>c.club_name=canonicalClub(c.club_name));
+  [matches,scorers,cards]=results.map(r=>r.data||[]);
+  matches.forEach(m=>{m.home_club=canonicalClub(m.home_club);m.away_club=canonicalClub(m.away_club);});
+  scorers.forEach(s=>s.club_name=canonicalClub(s.club_name));
+  cards.forEach(c=>c.club_name=canonicalClub(c.club_name));
   matches.forEach(m=>{m.home_goals=m.home_goals===null?null:Number(m.home_goals);m.away_goals=m.away_goals===null?null:Number(m.away_goals);});
   $('#copaStatus').textContent='Datos de Copa actualizados desde Supabase.';
   renderBracket();renderAggregate();renderScorers();
