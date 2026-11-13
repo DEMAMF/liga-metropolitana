@@ -106,6 +106,8 @@ function renderAdminMatches() {
   }).join('')+'</div></div>').join('');
 }
 async function load() {
+  // Mostrar siempre el fixture base, incluso si Supabase tarda o devuelve un error.
+  renderBracket();
   if(!db){$('#copaStatus').textContent='Falta configurar Supabase en config.js.';return;}
   const results=await Promise.all([
     db.from('copa_matches').select('*'),
@@ -113,7 +115,7 @@ async function load() {
     db.from('copa_cards').select('*')
   ]);
   const err=results.find(r=>r.error)?.error;
-  if(err){$('#copaStatus').textContent='No se pudieron cargar los datos de Copa. Ejecutá primero el SQL de configuración en Supabase. Detalle: '+err.message;return;}
+  if(err){$('#copaStatus').textContent='No se pudieron cargar los datos guardados. Se muestra el fixture base. Detalle: '+err.message;renderBracket();renderAggregate();renderScorers();return;}
   [matches,scorers,cards]=results.map(r=>r.data||[]);
   matches.forEach(m=>{m.home_club=canonicalClub(m.home_club);m.away_club=canonicalClub(m.away_club);});
   scorers.forEach(s=>s.club_name=canonicalClub(s.club_name));
