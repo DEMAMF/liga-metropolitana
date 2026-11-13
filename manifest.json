@@ -1,0 +1,20 @@
+{
+  "id": "./copa.html",
+  "name": "Departamento de Futsal",
+  "short_name": "Futsal",
+  "description": "Acceso directo a la Copa de Clubes 2026.",
+  "start_url": "./copa.html?origen=app",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#07182b",
+  "theme_color": "#07182b",
+  "icons": [
+    {
+      "src": "./app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
