@@ -168,9 +168,8 @@ async function saveScore(form) {
   if(!tie?.home||!tie?.away){alert('Este cruce todavía no tiene los dos equipos definidos.');return;}
   const homeValue=form.elements.home_goals.value,awayValue=form.elements.away_goals.value;
   if((homeValue==='')!==(awayValue==='')){alert('Completá los dos goles o dejá ambos vacíos para cargar solamente el árbitro.');return;}
-  const referee=form.elements.referee.value.trim();
-  if(homeValue===''&&awayValue===''&&!referee){alert('Ingresá el árbitro o completá el resultado.');return;}
-  const payload={tie_code:t,category:cat,home_club:tie.home,away_club:tie.away,match_date:form.elements.match_date.value||null,home_goals:homeValue===''?null:Number(homeValue),away_goals:awayValue===''?null:Number(awayValue),referee:referee||null};
+  if(homeValue===''||awayValue===''){alert('Completá los goles del local y del visitante para guardar el resultado.');return;}
+  const payload={tie_code:t,category:cat,home_club:tie.home,away_club:tie.away,match_date:form.elements.match_date.value||null,home_goals:Number(homeValue),away_goals:Number(awayValue)};
   const existing=matchFor(t,cat);
   const result=existing?await db.from('copa_matches').update(payload).eq('id',existing.id):await db.from('copa_matches').insert(payload);
   if(result.error){$('#copaStatus').textContent='Error al guardar: '+result.error.message;return;}
