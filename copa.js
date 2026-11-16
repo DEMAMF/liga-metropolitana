@@ -10,13 +10,13 @@ const crestFiles = {
   'Villa Cool':'VILLA COLL.png','Villa Coll':'VILLA COLL.png','CDSV':'CDSV.png','Defensores de Glew':'DEFENSORES DE GLEW.png',
   'Malvinas':'MALVINAS.png','Lírico':'LIRICO.png','Lirico':'LIRICO.png','Sakura':'SAKURA.png','Santa Ana':'SANTA ANA.png'
 };
-const clubs = ['Villa Cool','CDSV','Defensores de Glew','Malvinas','Lirico','Sakura','Santa Ana'];
+const clubs = ['Villa Cool','CDSV','Defensores de Glew','Malvinas','Lírico','Sakura','Santa Ana'];
 const categories = ['Sub-15 Femenino','Sub-17 Femenino','1ª Femenino','6ª División','5ª División','4ª División','3ª División','1ª División','Senior'];
 const copaCategories = categories.filter(c => c !== 'Sub-15 Femenino');
 const ties = [
   {id:'QF1',title:'Cuartos · Partido 1',home:'CDSV',away:'Santa Ana'},
   {id:'QF2',title:'Cuartos · Partido 2',home:'Defensores de Glew',away:'Sakura'},
-  {id:'QF3',title:'Cuartos · Partido 3',home:'Malvinas',away:'Lirico'},
+  {id:'QF3',title:'Cuartos · Partido 3',home:'Malvinas',away:'Lírico'},
   {id:'SF1',title:'Semifinal 1',home:'Villa Cool',away:null},
   {id:'SF2',title:'Semifinal 2',home:null,away:null},
   {id:'FINAL',title:'Final',home:null,away:null}
