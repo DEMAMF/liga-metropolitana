@@ -13,6 +13,7 @@ const crestFiles = {
 const clubs = ['Villa Cool','CDSV','Defensores de Glew','Malvinas','Lírico','Sakura','Santa Ana'];
 const categories = ['Sub-15 Femenino','Sub-17 Femenino','1ª Femenino','6ª División','5ª División','4ª División','3ª División','1ª División','Senior'];
 const copaCategories = categories.filter(c => c !== 'Sub-15 Femenino');
+const copaDisplayCategories = ['Sub-17 Femenino','6ª División','5ª División','4ª División','1ª Femenino','Senior','3ª División','1ª División'];
 const ties = [
   {id:'QF1',title:'Cuartos · Partido 1',home:'CDSV',away:'Santa Ana'},
   {id:'QF2',title:'Cuartos · Partido 2',home:'Defensores de Glew',away:'Sakura'},
@@ -69,7 +70,7 @@ function tieCard(t) {
   return '<article class="copa-tie"><div class="copa-tie-head">'+esc(t.title)+'</div>'+
     '<div class="copa-tie-teams">'+team(home)+'<strong class="copa-versus">VS</strong>'+team(away)+'</div>'+refs+
     '<div class="copa-tie-meta">'+(stats ? (stats.winner ? 'Clasificado: <b>'+esc(stats.winner)+'</b>' : stats.tied ? 'Empate total: pendiente de resolución' : stats.rows.length+'/8 categorías cargadas') : 'La llave se define con las 8 categorías')+'</div>'+
-    '<div class="copa-mini-results">'+copaCategories.map(cat=>{const m=matchFor(t.id,cat);return '<span>'+esc(cat.replace(' División','').replace(' Femenino',' F.'))+': <b>'+score(m)+'</b>'+(m?.referee?'<small class="copa-referee">⚖️ Árbitro: '+esc(m.referee)+'</small>':'')+'</span>';}).join('')+'</div></article>';
+    '<div class="copa-mini-results">'+copaDisplayCategories.map(cat=>{const m=matchFor(t.id,cat);return '<span>'+esc(cat.replace(' División','').replace(' Femenino',' F.'))+': <b>'+score(m)+'</b>'+(m?.referee?'<small class="copa-referee">⚖️ Árbitro: '+esc(m.referee)+'</small>':'')+'</span>';}).join('')+'</div></article>';
 }
 function renderBracket() {
   resolveBracket();
